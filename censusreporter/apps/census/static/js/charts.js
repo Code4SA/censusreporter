@@ -31,15 +31,13 @@ function Chart(options) {
         chart.chartColorScale = options.chartColorScale || 'Set2S';
         chart.comparisonNames = {
             'this': (!!options.comparisonThisName) ? options.comparisonThisName : 'here',
-            'county': (!!options.comparisonCountyName) ? options.comparisonCountyName : 'county',
-            'state': (!!options.comparisonStateName) ? options.comparisonStateName : 'state',
-            'nation': (!!options.comparisonNationName) ? options.comparisonNationName : 'United States'
+            'province': (!!options.comparisonProvinceName) ? options.comparisonProvinceName : 'province',
+            'country': (!!options.comparisonNationName) ? options.comparisonNationName : 'South Africa'
         }
         chart.comparisonNamePhrases = {
             'this': (!!options.comparisonThisName) ? 'in ' + options.comparisonThisName : 'here',
-            'county': (!!options.comparisonCountyName) ? 'in ' + options.comparisonCountyName : 'countywide',
-            'state': (!!options.comparisonStateName) ? 'in ' + options.comparisonStateName : 'statewide',
-            'nation': (!!options.comparisonNationName) ? 'in ' + options.comparisonNationName : 'nationwide'
+            'province': (!!options.comparisonProvinceName) ? 'in ' + options.comparisonProvinceName : 'provincewide',
+            'country': (!!options.comparisonNationName) ? 'in ' + options.comparisonNationName : 'countrywide'
         }
         
         var dataObj,
@@ -747,7 +745,7 @@ function Chart(options) {
     }
     
     chart.makeDataDrawerHeader = function(d) {
-        var places = ['this', 'county', 'state', 'nation'],
+        var places = ['this', 'province', 'country'],
             rowBits = ['<th class="name">Column</th>'],
             colspan,
             cellContents;
@@ -763,18 +761,18 @@ function Chart(options) {
     }
     
     chart.makeDataDrawerRow = function(d) {
-        var places = ['this', 'county', 'state', 'nation'],
+        var places = ['this', 'province', 'country'],
             rowBits = ['<td class="name">' + d.name + '</td>'],
             cellContents;
             
         places.forEach(function(k, i) {
             if (d.context.values[k] >= 0) {
                 // add the primary value
-                rowBits.push('<td class="value">' + chart.valFmt(d.context.values[k]) + ' (&plusmn;' + chart.valFmt(d.context.error[k]) + ')</td>');
+                rowBits.push('<td class="value">' + chart.valFmt(d.context.values[k]) + ' </td>');
 
                 // add the numerator value if it exists
                 if (d.context.numerators[k] !== null) {
-                    cellContents = chart.commaFmt(d.context.numerators[k]) + ' (&plusmn;' + chart.commaFmt(d.context.numerator_errors[k]) + ')';
+                    cellContents = chart.commaFmt(d.context.numerators[k]);
                     rowBits.push('<td class="value">' + cellContents + '</td>');
                 }
             }
@@ -795,8 +793,7 @@ function Chart(options) {
             phraseBits,
             compareBits,
             contextData = data.context,
-            moeFlag = contextData.error.this_ratio >= 10 ? "<sup>&dagger;</sup>" : "",
-            cardStat = chart.valFmt(contextData.values.this) + moeFlag,
+            cardStat = chart.valFmt(contextData.values.this),
             cardComparison = [];
             
         // add cardStat MOE
@@ -810,12 +807,11 @@ function Chart(options) {
             if (k != 'this' && k.indexOf('_index') == -1) {
                 value = contextData.values[k];
                 index = contextData.values[k + '_index'];
-                moeFlag = contextData.error[k + '_ratio'] >= 10 ? "<sup>&dagger;</sup>" : "";
                 
                 // generate the comparative text for this parent level
                 if (!!index) {
                     phraseBits = chart.getComparisonThreshold(index);
-                    compareBits = "<strong>" + phraseBits[0] + "</strong> " + phraseBits[1] + " the " + chart.getComparisonNoun() + " " + chart.comparisonNamePhrases[k] + ": " + chart.valFmt(value) + moeFlag;
+                    compareBits = "<strong>" + phraseBits[0] + "</strong> " + phraseBits[1] + " the " + chart.getComparisonNoun() + " " + chart.comparisonNamePhrases[k] + ": " + chart.valFmt(value);
 
                     // add comparison MOE
                     //compareBits += "&nbsp;<span class='context'>&plusmn;" + chart.valFmt(contextData.error[k]) +"</span>";
@@ -824,7 +820,7 @@ function Chart(options) {
                     //    compareBits += "<span class='push-right'>" + chart.valFmt(contextData.numerators[k], true) + moeFlag + "&nbsp;<span class='context'>&plusmn;" + chart.valFmt(contextData.numerator_errors[k], true) +"</span>";
                     //}
                 } else {
-                    compareBits = "<strong>" + chart.capitalize(k) + ":</strong> " + chart.valFmt(value) + moeFlag;
+                    compareBits = "<strong>" + chart.capitalize(k) + ":</strong> " + chart.valFmt(value);
                     
                     // add comparison MOE
                     //compareBits += "&nbsp;<span class='context'>&plusmn;" + chart.valFmt(contextData.error[k]) +"</span>";
@@ -845,17 +841,6 @@ function Chart(options) {
             "<ul><li>" + cardStat + "</li></ul>",
             "<ul>" + cardComparison.join('') + "</ul>"
         ].join('');
-        
-        var maxMOE = [];
-        d3.keys(contextData.error).forEach(function(k, v) {
-            if (k.indexOf('_ratio') != -1 && contextData.error[k]) {
-                maxMOE.push(contextData.error[k])
-            }
-        })
-        maxMOE.sort(function(x, y) { return y - x });
-        if (maxMOE[0] >= 10) {
-            card += "<div class='note'><sup>&dagger;</sup> Margin of error is at least 10 percent of the total value. Take care with this statistic.</div>"
-        }
 
         return card
     }
