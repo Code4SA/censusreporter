@@ -1,8 +1,8 @@
 from django.conf.urls import url, patterns, include
 from django.contrib import admin
+from django.views.generic import TemplateView
 
-from .views import (HomepageView, GeographyDetailView, PlaceSearchJson,
-                    TableSearch, TableSearchJson, GeoSearch, LocateView,
+from .views import (GeographyDetailView, PlaceSearchJson, LocateView,
                     WardSearchProxy)
 
 
@@ -16,9 +16,16 @@ urlpatterns = patterns('',
 
     url(
         regex   = '^$',
-        view    = HomepageView.as_view(),
+        view    = TemplateView.as_view(template_name="homepage.html"),
         kwargs  = {},
         name    = 'homepage',
+    ),
+
+    url(
+        regex   = '^how-to/$',
+        view    = TemplateView.as_view(template_name="how_to.html"),
+        kwargs  = {},
+        name    = 'how-to',
     ),
 
     url(
@@ -35,23 +42,6 @@ urlpatterns = patterns('',
         name    = 'ward_search_json',
     ),
 
-     ## LOCAL DEV VERSION OF API ##
-
-    url(
-        regex   = '^table-search/$',
-        view    = TableSearch.as_view(),
-        kwargs  = {},
-        name    = 'table_search',
-    ),
-    url(
-        regex   = '^table-search/json/$',
-        view    = TableSearchJson.as_view(),
-        kwargs  = {},
-        name    = 'table_search_json',
-    ),
-
-    ## END LOCAL DEV VERSION OF API ##
-
     url(
         regex   = '^locate/$',
         view    = LocateView.as_view(),
@@ -61,7 +51,7 @@ urlpatterns = patterns('',
 
     # e.g. /profiles/16000US5367000/ (Spokane, WA)
     url(
-        regex   = '^profiles/(?P<geography_id>(%s)-[\w]+)/$' % geo_levels,
+        regex   = '^profiles/(?P<geo_level>%s)-(?P<geo_code>[\w]+)/$' % geo_levels,
         view    = GeographyDetailView.as_view(),
         kwargs  = {},
         name    = 'geography_detail',

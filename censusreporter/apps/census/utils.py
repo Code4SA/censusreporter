@@ -41,40 +41,6 @@ def get_ratio(num1, num2, precision=2):
         return round(round(float(num1) / float(num2), precision)*100, 1) or None
     return None
 
-# provide some topics to choose from
-TOPIC_FILTERS = {
-    'Demographics': {'topics': ['age', 'sex', 'race', 'seniors',]},
-    'Economics': {'topics': ['commute', 'employment', 'health insurance', 'income', 'poverty', 'public assistance',]},
-    'Families': {'topics': ['children', 'families', 'family type', 'fertility', 'grandparents', 'marital status', 'roommates',]},
-    'Housing': {'topics': ['costs and value', 'group quarters', 'mortgage', 'occupancy', 'physical characteristics', 'tenure',]},
-    'Social': {'topics': ['ancestry', 'citizenship', 'disability', 'education', 'language', 'migration', 'place of birth', 'veterans',]},
-}
-
-SUMLEV_CHOICES = OrderedDict()
-SUMLEV_CHOICES['Standard'] = [
-    {'name': 'state', 'plural_name': 'States', 'summary_level': '040', 'ancestor_sumlev_list': '010,020,030', 'ancestor_options': 'the United States' },
-    {'name': 'county', 'plural_name': 'Counties', 'summary_level': '050', 'ancestor_sumlev_list': '010,020,030,040', 'ancestor_options': 'the United States or a State' },
-    {'name': 'county subdivision', 'plural_name': 'County subdivisions', 'summary_level': '060', 'ancestor_sumlev_list': '010,020,030,040,050', 'ancestor_options': 'the United States, a State or County' },
-    {'name': 'place', 'plural_name': 'Places', 'summary_level': '160', 'ancestor_sumlev_list': '010,020,030,040,050', 'ancestor_options': 'the United States, a State or County' },
-    {'name': 'metro area', 'plural_name': 'Metro areas', 'summary_level': '310', 'ancestor_sumlev_list': '010,020,030,040', 'ancestor_options': 'the United States or a State' },
-    {'name': 'native area', 'plural_name': 'Native areas', 'summary_level': '250', 'ancestor_sumlev_list': '010,020,030,040', 'ancestor_options': 'the United States or a State' },
-    {'name': 'census tract', 'plural_name': 'Census tracts', 'summary_level': '140', 'ancestor_sumlev_list': '010,020,030,040,050,160', 'ancestor_options': 'the United States, a State, County or Place' },
-    {'name': 'block group', 'plural_name': 'Block groups', 'summary_level': '150', 'ancestor_sumlev_list': '010,020,030,040,050,140,160', 'ancestor_options': 'the United States, a State, County, Place or Census Tract' },
-    {'name': 'zip codes', 'plural_name': 'ZIP codes', 'summary_level': '860', 'ancestor_sumlev_list': '010,020,030,040,050,160', 'ancestor_options': 'the United States, a State, County or Place' },
-]
-SUMLEV_CHOICES['Legislative'] = [
-    {'name': 'congressional district', 'plural_name': 'congressional districts', 'summary_level': '500', 'ancestor_sumlev_list': '010,020,030,040', 'ancestor_options': 'the United States or a State' },
-    {'name': 'state senate district', 'plural_name': 'state senate districts', 'summary_level': '610', 'ancestor_sumlev_list': '010,020,030,040', 'ancestor_options': 'the United States or a State' },
-    {'name': 'state house district', 'plural_name': 'state house districts', 'summary_level': '620', 'ancestor_sumlev_list': '010,020,030,040', 'ancestor_options': 'the United States or a State' },
-    {'name': 'voting tabulation district', 'plural_name': 'voting tabulation districts', 'summary_level': '700', 'ancestor_sumlev_list': '010,020,030,040,050', 'ancestor_options': 'the United States, a State or County' },
-]
-SUMLEV_CHOICES['Schools'] = [
-    {'name': 'elementary school district', 'plural_name': 'elementary school districts', 'summary_level': '950', 'ancestor_sumlev_list': '010,020,030,040,050', 'ancestor_options': 'the United States, a State or County' },
-    {'name': 'secondary school district', 'plural_name': 'secondary school districts', 'summary_level': '960', 'ancestor_sumlev_list': '010,020,030,040,050', 'ancestor_options': 'the United States, a State or County' },
-    {'name': 'unified school district', 'plural_name': 'unified school districts', 'summary_level': '970', 'ancestor_sumlev_list': '010,020,030,040,050', 'ancestor_options': 'the United States, a State or County' },
-]
-
-NLTK_STOPWORDS = ['i','me','my','myself','we','our','ours','ourselves','you','your','yours','yourself','yourselves','he','him','his','himself','she','her','hers','herself','it','its','itself','they','them','their','theirs','themselves','what','which','who','whom','this','that','these','those','am','is','are','was','were','be','been','being','have','has','had','having','do','does','did','doing','a','an','the','and','but','if','or','because','as','until','while','of','at','by','for','with','about','against','between','into','through','during','before','after','above','below','to','from','up','down','in','out','on','off','over','under','again','further','then','once','here','there','when','where','why','how','all','any','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','s','t','can','will','just','don','should','now']
 
 # Sources:
 # http://mcdc2.missouri.edu/pub/data/sf32000/Techdoc/ch4_summary_level_seq_chart.pdf
