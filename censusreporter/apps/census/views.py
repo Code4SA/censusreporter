@@ -1,10 +1,8 @@
 from __future__ import division
 import requests
 from collections import OrderedDict
-from urllib2 import unquote
 
 from django.conf import settings
-from django.db.models import Q
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
 from django.utils import simplejson
 from django.utils.safestring import SafeString
@@ -14,7 +12,7 @@ from api import LocationNotFound
 from api.controller import (get_census_profile, get_geography, get_locations,
                             get_elections_profile)
 
-from .utils import (LazyEncoder, get_ratio, SUMMARY_LEVEL_DICT)
+from .utils import LazyEncoder, get_ratio
 
 import logging
 logger = logging.getLogger(__name__)
@@ -148,7 +146,8 @@ class WardSearchProxy(View):
 class LocateView(TemplateView):
     template_name = 'locate/locate.html'
 
-    def get_api_data(self, lat, lon):
+    # TODO
+    """def get_api_data(self, lat, lon):
         '''
         Retrieves data from the comparison endpoint at api.censusreporter.org.
         '''
@@ -186,4 +185,4 @@ class LocateView(TemplateView):
                 'places': places
             })
 
-        return page_context
+        return page_context"""
