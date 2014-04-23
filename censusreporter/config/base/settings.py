@@ -107,3 +107,5 @@ ADMINS = (
     ('Rizmari Versfeld', 'rizziepit@gmail.com'),
 )
 MANAGERS = ADMINS
+
+API_URL = 'http://api.censusreporter.org'
