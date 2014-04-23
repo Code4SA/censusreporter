@@ -1,8 +1,8 @@
 from django.conf.urls import url, patterns, include
 from django.contrib import admin
-from django.views.generic import TemplateView
 
-from .views import (GeographyDetailView, PlaceSearchJson, LocateView,
+from .views import (HomepageView, GeographyDetailView, PlaceSearchJson,
+                    TableSearch, TableSearchJson, GeoSearch, LocateView,
                     WardSearchProxy)
 
 
@@ -16,16 +16,9 @@ urlpatterns = patterns('',
 
     url(
         regex   = '^$',
-        view    = TemplateView.as_view(template_name="homepage.html"),
+        view    = HomepageView.as_view(),
         kwargs  = {},
         name    = 'homepage',
-    ),
-
-    url(
-        regex   = '^how-to/$',
-        view    = TemplateView.as_view(template_name="how_to.html"),
-        kwargs  = {},
-        name    = 'how-to',
     ),
 
     url(
@@ -41,6 +34,23 @@ urlpatterns = patterns('',
         kwargs  = {},
         name    = 'ward_search_json',
     ),
+
+     ## LOCAL DEV VERSION OF API ##
+
+    url(
+        regex   = '^table-search/$',
+        view    = TableSearch.as_view(),
+        kwargs  = {},
+        name    = 'table_search',
+    ),
+    url(
+        regex   = '^table-search/json/$',
+        view    = TableSearchJson.as_view(),
+        kwargs  = {},
+        name    = 'table_search_json',
+    ),
+
+    ## END LOCAL DEV VERSION OF API ##
 
     url(
         regex   = '^locate/$',
