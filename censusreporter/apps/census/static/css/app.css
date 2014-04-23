@@ -489,12 +489,8 @@ section aside sup {
 }
 
 /* HOMEPAGE */
-#homepage #blurb {
-    margin-top: 3em;
-}
 #homepage .content-container,
-#comparison-builder .content-container,
-#how-to .content-container {
+#comparison-builder .content-container {
     padding: 2.5em 0;
 }
 .white-stripe {
@@ -503,7 +499,7 @@ section aside sup {
 .tan-stripe {
     background-color: #eff1e9;
 }
-#homepage h1.article-header, #how-to h1.article-header {
+#homepage h1.article-header {
     font-size: 3em;
     margin-bottom: .25em;
 }
@@ -2314,7 +2310,7 @@ section.chart-divider h2 {
     #cover-profile {
         margin-top: 150px;
     }
-    #homepage h1.article-header, #how-to h1.article-header {
+    #homepage h1.article-header {
         font-size: 2.5em;
     }
     #homepage #geography-select-home {
@@ -2323,10 +2319,10 @@ section.chart-divider h2 {
     .callout h3 {
         font-size: 21px;
     }
-    #homepage .content-container, #how-to .content-container {
+    #homepage .content-container {
         padding: 2em 0 1em;
     }
-    #homepage .content-container:first-child, #how-to .content-container:first-child {
+    #homepage .content-container:first-child {
         padding-top: 1em;
     }
     #geography-picker #sumlevs-standard {
@@ -2344,7 +2340,7 @@ section.chart-divider h2 {
     }
 }
 @media only screen and (max-width: 360px) {
-    #homepage h1.article-header, #how-to h1.article-header {
+    #homepage h1.article-header {
         font-size: 2.2em;
     }
 }
