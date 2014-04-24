@@ -61,7 +61,7 @@ urlpatterns = patterns('',
 
     # e.g. /profiles/16000US5367000/ (Spokane, WA)
     url(
-        regex   = '^profiles/(?P<geography_id>(%s)-[\w]+)/$' % geo_levels,
+        regex   = '^profiles/(?P<geo_level>%s)-(?P<geo_code>[\w]+)/$' % geo_levels,
         view    = GeographyDetailView.as_view(),
         kwargs  = {},
         name    = 'geography_detail',

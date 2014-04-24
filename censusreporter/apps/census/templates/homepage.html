@@ -15,11 +15,6 @@
 <div class="content-container clearfix tan-stripe">
     <article id="profile" class="clearfix wrapper">
         <section class="column-full clearfix">
-            {% comment %}<p class="explain">
-                This feature is under active development, so may occasionally appear broken.
-            </p>
-            We&rsquo;ll be at the <a href="http://journalists.org/conference/ona13/">Online News Association conference, Oct. 17-19,</a> to introduce it. Come by &ldquo;the midway&rdquo; and tell us what you think!{% endcomment %}
-            
             <h1 class="article-header">Profile a place</h1>
             <div id="geography-select-wrapper">
                 <input name="geography_select" id="geography-select-home" type="text" placeholder="Start typing a place name or address..." autocomplete="off">
@@ -40,21 +35,21 @@
                     <i class="fa fa-book"></i>
                     Find facts
                 </h3>
-                <p>Populations and dollar figures that help you understand a place, broken down by category: Demographics, Economics, Families, Housing and Social.</p>
+                <p>Populations and financial figures are broken down by category: Elections, Demographics, Service Delivery, Economics and Education.</p>
             </div>
             <div class="column-third callout with-icon">
                 <h3>
                     <i class="fa fa-bar-chart-o"></i>
                     Visualize
                 </h3>
-                <p>We&rsquo;re continuing to build a library of charts to give you insight into data from the places you research. Look for them on profile pages.</p>
+                <p>Our library of charts gives you insight into data from the places you research. Look for them on profile pages.</p>
             </div>
             <div class="column-third callout with-icon">
                 <h3>
                     <i class="fa fa-refresh"></i>
                     Get context
                 </h3>
-                <p>We&rsquo;re working on pre-computed statistics to add context to each data point, so you can see how each place fits into its province and country.</p>
+                <p>Pre-computed statistics are presented alongside each data point, so you can see how each place fits into a larger context.</p>
             </div>
         </section>
     </article>
@@ -63,35 +58,29 @@
 <div class="content-container clearfix tan-stripe">
     <article id="examples" class="clearfix wrapper">
         <header class="column-full">
-            <h1 class="article-header">Using this site</h1>
-            <p class="explainer">Census Reporter is a <a href="http://www.knightfoundation.org/press-room/press-release/six-ventures-bring-data-public-winners-knight-news/">Knight News Challenge-funded project</a> to make it easier for journalists to write stories using information from the U.S. Census bureau. Place profiles and comparison pages provide a friendly interface for navigating data, including visualizations for a more useful first look.</p>
+            <h1 class="article-header">About this site</h1>
+            <p class="explainer">TODO is a joint project by <a href="http://www.code4sa.org/">Code4SA</a> and <a href="http://www.mediamonitoringafrica.org/">Media Monitoring Africa</a> that provides easy access to South African census and elections data.
+            <p>TODO started out as a fork of <a href="http://censusreporter.org/">Census Reporter</a>, a tool for investigating US census data. Census Reporter and TODO are both open source. You can find them on Github <a href="https://github.com/censusreporter/censusreporter/">here</a> and <a href="https://github.com/Code4SA/censusreporter/">here</a>.</p>
         </header>
         <section class="card-container clearfix">
-            <h2 class="column-full subhead">Examples</h2>
-            <a class="column-third card" href="/compare/01000US/040/map/?release=acs2012_1yr&table=B06011">
-                <img src="{% static 'img/examples/us_median_income_map.png' %}">
-                <span class="caption">How does median income compare from state to state? <span class="more">More &rarr;</span></span>
-            </a>
-            <a class="column-third card" href="/profiles/16000US0644000/">
-                <img src="{% static 'img/examples/language_los_angeles.png' %}">
-                <span class="caption">What languages do people speak at home in Los Angeles? <span class="more">More &rarr;</span></span>
-            </a>
-            <a class="column-third card" href="/compare/01000US/040/distribution/?release=acs2012_1yr&table=B07009">
-                <img src="{% static 'img/examples/us_geographic_mobility_distribution.png' %}">
-                <span class="caption">Where are people most mobile, and what skills do they have? <span class="more">More &rarr;</span></span>
-            </a>
-            <a class="column-third card" href="/profiles/16000US5367000/">
-                <img src="{% static 'img/examples/poverty_spokane.png' %}">
-                <span class="caption">How many children live in poverty in Spokane, Wash.? <span class="more">More &rarr;</span></span>
-            </a>
-            <a class="column-third card" href="/compare/01000US/040/table/?release=acs2012_1yr&table=B02001">
-                <img src="{% static 'img/examples/us_race_table.png' %}">
-                <span class="caption">What is the racial makeup of the U.S., and how do states compare? <span class="more">More &rarr;</span></span>
-            </a>
-            <a class="column-third card" href="/profiles/16000US3916000/">
-                <img src="{% static 'img/examples/education_cleveland.png' %}">
-                <span class="caption">How many people have college degrees in Cleveland? <span class="more">More &rarr;</span></span>
-            </a>
+            <h2 class="column-full subhead">Finding places</h2>
+            <span class="column-half card">
+                <img src="{% static 'img/examples/text_search.png' %}">
+                <span class="caption">Type in the name or address of a place. Then select the location you are interested in from the dropdown.</span>
+            </span>
+            <span class="column-half card">
+                <img src="{% static 'img/examples/map_search.png' %}">
+                <span class="caption">Alternatively, click on the map area you want to go to. The <span class="zoom-in">+</span> and <span class="zoom-out">-</span> buttons zoom in an out.</span>
+            </span>
+            <h2 class="column-full subhead">Exploring data</h2>
+            <span class="column-half card">
+                <img src="{% static 'img/examples/section_overview.png' %}">
+                <span class="caption">Statistics are broken down into categories, e.g. Service Delivery. Find a key figure for a sub-category on the left.</span>
+            </span>
+            <span class="column-half card">
+                <img src="{% static 'img/examples/hover_over_graph.png' %}">
+                <span class="caption">Hover over graphs to see comparisons with the province and country averages.</span>
+            </span>
         </section>
     </article>
 </div>

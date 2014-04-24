@@ -88,37 +88,15 @@ class GeographyDetailView(TemplateView):
         return api_data
 
     def get_context_data(self, *args, **kwargs):
-        geography_id = kwargs['geography_id']
+        geo_level = kwargs['geo_level']
+        geo_code = kwargs['geo_code']
 
         page_context = {
-            'state_fips_code': None,
-            'geography_fips_code': None
+            'geo_code': geo_code,
+            'geo_level': geo_level,
         }
 
-        if 'US' in geography_id:
-            geoIDcomponents = geography_id.split('US')
-
-            sumlev = geoIDcomponents[0][:3]
-            page_context['sumlev'] = sumlev
-
-            fips_code = geoIDcomponents[1]
-            if len(fips_code) >= 2:
-                state_fips = fips_code[:2]
-                page_context['state_fips_code'] = state_fips
-                page_context['state_geoid'] = '04000US%s' % state_fips
-
-            if sumlev == '050' and len(fips_code) == 5:
-                page_context['county_fips_code'] = fips_code
-
-        # hit our API
-        #acs_endpoint = settings.API_URL + '/1.0/%s/%s/profile' % (acs_release, kwargs['geography_id'])
-        #acs_endpoint = settings.API_URL + '/1.0/latest/%s/profile' % kwargs['geography_id']
-        #r = requests.get(acs_endpoint)
-
-        #if r.status_code == 200:
         try:
-            geo_level, geo_code = geography_id.split('-')
-
             geo = get_geography(geo_code, geo_level)
             profile_data = get_census_profile(geo_code, geo_level)
             profile_data['elections'] = get_elections_profile(geo_code, geo_level)
@@ -131,11 +109,6 @@ class GeographyDetailView(TemplateView):
         page_context.update({
             'profile_data_json': SafeString(simplejson.dumps(profile_data, cls=LazyEncoder))
         })
-        #else:
-        #    raise Http404
-
-        # Put this down here to make sure geoid is valid before using it
-        page_context['geoid'] = geography_id
 
         #tiger_release = 'tiger2012'
         #geo_endpoint = settings.API_URL + '/1.0/geo/%s/%s' % (tiger_release, kwargs['geography_id'])

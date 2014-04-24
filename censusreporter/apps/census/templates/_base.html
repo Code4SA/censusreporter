@@ -8,7 +8,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>{% block head_title %}Census Reporter{% endblock %}</title>
+        <title>{% block head_title %}TODO{% endblock %}</title>
         <meta name="description" content="{% block head_meta_description %}{% endblock %}">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         {% block head_css %}
@@ -34,7 +34,7 @@
                 <i id="menu-toggle" class="fa fa-reorder"></i>
                 {% endif %}
                 <a class="title" href="{% url 'homepage' %}">
-                    <img src="{% static 'img/logo.png' %}"> Census Reporter
+                    <img src="{% static 'img/logo.png' %}"> TODO
                 </a>
                 {% if not hide_nav_tools %}
                 <div id="menu" class="tool-set clearfix">
@@ -62,16 +62,16 @@
                 {% block footer_content %}
                 <ul class="ul-icon-list">
                     <li class="column-quarter">
-                        <i class="fa fa-twitter"></i> <a href="#">@CensusReporter</a>
+                        <i class="fa fa-github"></i> <a href="https://github.com/Code4SA/censusreporter">TODO on Github</a>
                     </li>
                     <li class="column-quarter">
-                        <i class="fa fa-tumblr"></i> <a href="#">Census Reporter blog</a>
+                        <i class="fa fa-th-list"></i> <a href="http://www.mediamonitoringafrica.org/">Media Monitoring Africa Home</a>
                     </li>
                     <li class="column-quarter">
-                        <i class="fa fa-comments"></i> <a href="#">Help &amp; feedback</a>
+                        <i class="fa fa-twitter"></i> <a href="http://twitter.com/MMA_tweeter">@MMA_tweeter</a>
                     </li>
                     <li class="column-quarter">
-                        <i class="fa fa-envelope"></i> <a href="#">Email us</a>
+                        <i class="fa fa-envelope"></i> <a href="mailto:info@mma.org.za">Email us</a>
                     </li>
                 </ul>
                 {% endblock footer_content %}
