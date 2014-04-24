@@ -12,7 +12,7 @@ from django.views.generic import View, TemplateView
 
 from api import LocationNotFound
 from api.controller import (get_census_profile, get_geography, get_locations,
-                            get_elections_profile)
+                            get_locations_from_coords, get_elections_profile)
 
 from .models import Geography, Table, Column
 from .utils import (LazyEncoder, get_ratio, SUMMARY_LEVEL_DICT, NLTK_STOPWORDS,
@@ -317,36 +317,13 @@ class GeoSearch(TemplateView):
 class LocateView(TemplateView):
     template_name = 'locate/locate.html'
 
-    def get_api_data(self, lat, lon):
-        '''
-        Retrieves data from the comparison endpoint at api.censusreporter.org.
-        '''
-        API_ENDPOINT = settings.API_URL + '/1.0/geo/search'
-        API_PARAMS = {
-            'lat': lat,
-            'lon': lon,
-            'sumlevs': '010,020,030,040,050,060,140,160,250,310,400,500,610,620,860,950,960,970'
-        }
-
-        r = requests.get(API_ENDPOINT, params=API_PARAMS)
-
-        if r.status_code == 200:
-            data = simplejson.loads(r.text, object_pairs_hook=OrderedDict)
-        else:
-            raise Http404
-
-        return data['results']
-
     def get_context_data(self, *args, **kwargs):
         page_context = {}
         lat = self.request.GET.get('lat', None)
         lon = self.request.GET.get('lon', None)
 
         if lat and lon:
-            places = self.get_api_data(lat, lon)
-            for place in places:
-                place['sumlev_name'] = SUMMARY_LEVEL_DICT[place['sumlevel']]['name']
-
+            places = get_locations_from_coords(latitude=lat, longitude=lon)
             page_context.update({
                 'location': {
                     'lat': lat,
