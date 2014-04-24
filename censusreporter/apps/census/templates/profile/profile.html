@@ -22,7 +22,7 @@
                   {{ geography.level|capfirst }}
                   in
                   {% for geo in geography.parents %}
-                    <a href="{% url "geography_detail" geo_code=geo_code geo_level=geo_level %}">{{ geo.name }}</a>,
+                    <a href="{% url "geography_detail" geo_code=geo.code geo_level=geo.level %}">{{ geo.name }}</a>,
                   {% endfor %}
                   South Africa
                 </p>
