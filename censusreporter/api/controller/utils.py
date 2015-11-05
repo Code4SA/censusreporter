@@ -253,8 +253,8 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
     The field values can be recoded using +recode+ and and re-ordered using +key_order+.
 
     :param str or list fields: the census field to build stats for. Specify a list of fields to build
-                               nested statistics. If multiple fields are specified, then the values 
-                               of parameters such as +only+, +exclude+ and +recode+ will change. 
+                               nested statistics. If multiple fields are specified, then the values
+                               of parameters such as +only+, +exclude+ and +recode+ will change.
                                These must be fields in `api.models.census.census_fields`, e.g. 'highest educational level'
     :param str geo_level: the geographical level
     :param str geo_code: the geographical code
@@ -270,7 +270,7 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
                                  mapping field names to a list of strings. Field names are checked
                                  before any recoding.
     :param bool exclude_zero: ignore fields that have a zero total
-    :param dict or lambda: function or dict to recode values of +key_field+. If +fields+ is a singleton,
+    :param dict or lambda recode: function or dict to recode values of +key_field+. If +fields+ is a singleton,
                            then the keys of this dict must be the values to recode from, otherwise
                            they must be the field names and then the values. If this is a lambda,
                            it is called with the field name and its value as arguments.
