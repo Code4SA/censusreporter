@@ -86,5 +86,9 @@ def get_demographics_profile(geo_code, geo_level, session):
             'name': "people per square kilometre",
             'values': {"this": total_pop / geo.square_kms}
         }
+        final_data['child_population_density'] = {
+            'name': 'children under the age of nine years per square kilometre',
+            'values': {"this": total_ecd / geo.square_kms}
+        }
 
     return final_data

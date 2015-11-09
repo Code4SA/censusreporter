@@ -57,7 +57,13 @@
                     {% if demographics.population_density.values.this %}
                     <span class="secondary">
                         <span class="value">{{ demographics.population_density.values.this|floatformat:"1" }}</span>
-                        <span class="name"> people per square kilometre</span>
+                        <span class="name"> {{ demographics.population_density.name }}</span>
+                    </span>
+                    {% endif %}
+                    {% if demographics.child_population_density.values.this %}
+                    <span class="secondary">
+                        <span class="value">{{ demographics.child_population_density.values.this|floatformat:"1" }}</span>
+                        <span class="name">{{ demographics.child_population_density.name }}</span>
                     </span>
                     {% endif %}
                 </div>
@@ -115,7 +121,7 @@
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#ecd_age_groups" id="age_groups">ECD age groups<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.ecd_age_groups.total_ecd stat_type='number' stat_wrapper="false" %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_ecd stat_type='number' %}
             </div>
             <div class="column-half" id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Age groups"></div>
         </section>
