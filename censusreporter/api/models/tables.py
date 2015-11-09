@@ -407,7 +407,6 @@ def get_model_from_fields(fields, geo_level, table_name=None):
 
     # try find it based on fields
     field_set = set(fields)
-
     possibilities = [(t, len(t.field_set - field_set))
         for t in FIELD_TABLES.itervalues() if len(t.field_set) >= len(field_set) and len(field_set - t.field_set) == 0]
     table, _ = min(possibilities, key=lambda p: p[1])
@@ -439,7 +438,7 @@ def build_model_from_fields(fields, geo_level, table_name=None):
                      for field in fields]
 
     # foreign keys
-    field_columns.append(Column('%s_code' % geo_level, String(5),
+    field_columns.append(Column('%s_code' % geo_level, String(8),
                                 ForeignKey('%s.code' % geo_level),
                                 primary_key=True, index=True))
 
@@ -496,6 +495,7 @@ FieldTable(['energy or fuel for lighting'])
 FieldTable(['gender'])
 FieldTable(['gender', 'marital status'])
 FieldTable(['gender', 'population group'])
+FieldTable(['gender', 'age groups in 5 years'])
 FieldTable(['highest educational level'])
 FieldTable(['highest educational level 20 and older'], universe='Individuals 20 and older')
 FieldTable(['language'], description='Population by primary language spoken at home')
