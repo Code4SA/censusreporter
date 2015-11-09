@@ -91,4 +91,21 @@ def get_demographics_profile(geo_code, geo_level, session):
             'values': {"this": total_ecd / geo.square_kms}
         }
 
+        ecd_pop_density = OrderedDict()
+
+        for k, age_group in ecd_age_groups.iteritems():
+            if k != 'metadata':
+                ecd_pop_density[age_group['name']] = {
+                    "name": age_group['name'],
+                    "values": {
+                        "this": age_group['values']['this'] / geo.square_kms
+                    },
+                    "numerators": {
+                        "this": age_group['numerators']['this']
+                    }
+                }
+        ecd_pop_density['metadata'] = ecd_age_groups['metadata']
+
+        final_data['ecd_pop_density'] = ecd_pop_density
+
     return final_data

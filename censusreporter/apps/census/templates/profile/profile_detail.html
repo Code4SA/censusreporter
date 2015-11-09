@@ -117,15 +117,25 @@
         <h1>Demographics</h1>
     </header>
     <div class="section-container">
-
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#ecd_age_groups" id="age_groups">ECD age groups<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_age_groups" id="age_groups">Early childhood age groups<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_ecd stat_type='number' %}
             </div>
             <div class="column-half" id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Age groups"></div>
         </section>
     </div>
+    {% if demographics.child_population_density.values.this %}
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_pop_density" id="ecd_pop_density">Child population density<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.child_population_density stat_type='number' %}
+            </div>
+            <div class="column-half" id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre"></div>
+        </section>
+    </div>
+    {% endif %}
 </article>
 
 {% endblock %}
