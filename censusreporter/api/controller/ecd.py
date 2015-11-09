@@ -14,7 +14,6 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 PROFILE_SECTIONS = (
     'demographics',
-    'age_groups',  # children in ECD age groups (0-2, 3-5, 6-9)
 )
 
 ECD_AGE_CATEGORIES = {
@@ -62,10 +61,22 @@ def get_demographics_profile(geo_code, geo_level, session):
     pop_dist_data, total_pop = get_stat_data(
             ['population group'], geo_level, geo_code, session)
 
+    ecd_age_groups, total_ecd = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=['0', '1', '2', '3', '4', '5', '6', '7', '8'],
+        recode=ECD_AGE_CATEGORIES,
+        percent=False)
+
     final_data = {
         'total_population': {
             "name": "People",
             "values": {"this": total_pop}
+        },
+        'ecd_age_groups': ecd_age_groups,
+        'total_ecd': {
+            "name": "Children under the age of nine years",
+            "values": {"this": total_ecd}
         }
     }
 
@@ -77,18 +88,3 @@ def get_demographics_profile(geo_code, geo_level, session):
         }
 
     return final_data
-
-def get_age_groups_profile(geo_code, geo_level, session):
-    ecd_ages, total = get_stat_data(
-        ['age in completed years'], geo_level, geo_code, session,
-        table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5', '6', '7', '8'],
-        recode=ECD_AGE_CATEGORIES,
-        percent=False)
-
-    return {
-        'age_group_distribution': ecd_ages,
-        'total_ecd_children': {
-            "name": "Children under the age of nine years",
-            "values": {"this": total}
-        }}

@@ -108,16 +108,16 @@
 
 <article id="ecd_ages" class="clearfix">
     <header class="section-contents">
-        <h1>Age groups</h1>
+        <h1>Demographics</h1>
     </header>
     <div class="section-container">
 
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#age_groups" id="age_groups">Age groups<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_age_groups" id="age_groups">ECD age groups<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=age_groups.total_ecd_children stat_type='number' stat_wrapper="false" %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.ecd_age_groups.total_ecd stat_type='number' stat_wrapper="false" %}
             </div>
-            <div class="column-half" id="chart-histogram-age_groups-age_group_distribution" data-chart-title="Age groups"></div>
+            <div class="column-half" id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Age groups"></div>
         </section>
     </div>
 </article>
