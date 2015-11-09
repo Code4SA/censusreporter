@@ -63,11 +63,11 @@
                 </div>
             </div>
             {% endif %}
-            
+
             {% if geography.this.show_extra_links %}
                 {% include "profile/_blocks/_header_extra_links.html" %}
             {% endif %}
-            
+
             <div class="column-full">
                 <p class="caption">
                     <strong>Census data:</strong> 2011
@@ -105,6 +105,23 @@
 </div>
 
 <p class="explain">Interact with charts and statistics for additional information.</p>
+
+<article id="ecd_ages" class="clearfix">
+    <header class="section-contents">
+        <h1>Age groups</h1>
+    </header>
+    <div class="section-container">
+
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#age_groups" id="age_groups">Age groups<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=age_groups.total_ecd_children stat_type='number' %}
+            </div>
+            <div class="column-half" id="chart-histogram-age_groups-age_group_distribution" data-chart-title="Age groups"></div>
+        </section>
+
+    </div>
+</article>
 
 <article id="elections" class="clearfix">
     <header class="section-contents">
