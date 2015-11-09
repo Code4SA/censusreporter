@@ -1,7 +1,5 @@
 from collections import OrderedDict
 
-from sqlalchemy import func
-
 from api.models import get_model_from_fields
 from api.models.tables import get_datatable, get_table_id
 from api.utils import get_session, LocationNotFound
@@ -12,6 +10,7 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 
 PROFILE_SECTIONS = (
+    'demographics',
     'age_groups',  # children in ECD age groups (0-2, 3-5, 6-9)
 )
 
@@ -24,8 +23,9 @@ ECD_AGE_CATEGORIES = {
     '5': '3-5',
     '6': '6-9',
     '7': '6-9',
-    '8': '6-9',
+    '8': '6-9'
 }
+
 
 def get_ecd_profile(geo_code, geo_level):
     session = get_session()
@@ -49,12 +49,24 @@ def get_ecd_profile(geo_code, geo_level):
                 for level, code in geo_summary_levels:
                     # merge summary profile into current geo profile
                     merge_dicts(data[section], func(code, level, session), level)
-
         return data
 
     finally:
         session.close()
 
+def get_demographics_profile(geo_code, geo_level, session):
+    # population group
+    pop_dist_data, total_pop = get_stat_data(
+            ['population group'], geo_level, geo_code, session)
+
+    final_data = {
+        'population_group_distribution': pop_dist_data,
+        'total_population': {
+            "name": "People",
+            "values": {"this": total_pop}
+        }}
+
+    return final_data
 
 def get_age_groups_profile(geo_code, geo_level, session):
     ecd_ages, total = get_stat_data(
@@ -65,11 +77,8 @@ def get_age_groups_profile(geo_code, geo_level, session):
         percent=False)
 
     return {
-        'age_groups': {
-            'age_distribt=ution': ecd_ages,
-            'total_ecd_children': {
-                "name": "ECD aged Children",
-                "values": {"this": total}
-            }
-        }
-    }
+        'age_group_distribution': ecd_ages,
+        'total_ecd_children': {
+            "name": "Children under the age of nine years",
+            "values": {"this": total}
+        }}
