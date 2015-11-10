@@ -76,12 +76,7 @@ def get_demographics_profile(geo_code, geo_level, session):
             'gender':['Female']
         },
         percent=False,
-        key_order = {
-            'age groups in 5 years': (
-                '15 - 19', '20 - 24',
-                '25 - 29', '30 - 34',
-                '35 - 39', '40 - 44')
-        }
+        order_by='age groups in 5 years'
     )
 
     final_data = {
