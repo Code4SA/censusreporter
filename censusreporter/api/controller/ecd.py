@@ -91,7 +91,7 @@ def get_demographics_profile(geo_code, geo_level, session):
         },
         'child_bearing_age': child_bearing_age,
         'total_child_bearing_age': {
-            "name": "Women of child bearing age",
+            "name": "Women of child bearing age(15-44 years old)",
             "values": {"this": total_child_bearing_age}
         }
     }
@@ -103,7 +103,7 @@ def get_demographics_profile(geo_code, geo_level, session):
             'values': {"this": total_pop / geo.square_kms}
         }
         final_data['child_population_density'] = {
-            'name': 'children under the age of nine years per square kilometre',
+            'name': 'Children under the age of nine years per square kilometre',
             'values': {"this": total_ecd / geo.square_kms}
         }
 
