@@ -109,7 +109,7 @@ def get_demographics_profile(geo_code, geo_level, session):
                 ecd_pop_density[age_group['name']] = {
                     "name": age_group['name'],
                     "values": {
-                        "this": age_group['values']['this'] / geo.square_kms
+                        "this": age_group['numerators']['this'] / geo.square_kms
                     },
                     "numerators": {
                         "this": age_group['numerators']['this']
