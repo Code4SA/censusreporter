@@ -542,6 +542,9 @@ FieldTable(['party'], universe='Votes', id='party_votes_national_2014', descript
 FieldTable(['party'], universe='Votes', id='party_votes_provincial_2014', description='2014 Provincial Election results',
         dataset='2014 Provincial Elections', year='2014')
 
+# ECD
+FieldTable(['age groups in 5 years'], id='womenagegroupsin5years15to44', universe='Women 15 to 44', description='Women of child bearing age', year='2011')
+
 # Simple Tables
 SimpleTable(
         id='voter_turnout_national_2014',
