@@ -68,14 +68,9 @@ def get_demographics_profile(geo_code, geo_level, session):
         recode=ECD_AGE_CATEGORIES,
         percent=True)
 
-    child_bearing_age, total_child_bearing_age = get_stat_data(
-        ['gender', 'age groups in 5 years'], geo_level, geo_code, session,
-        table_name='agegroupsin5years_gender_%s' % geo_level,
-        only={
-            'age groups in 5 years': ['15 - 19', '20 - 24', '25 - 29', '30 - 34', '35 - 39', '40 - 44'],
-            'gender':['Female']
-        },
-        percent=False,
+    women_child_bearing_age, total_women_child_bearing_age = get_stat_data(
+        ['age groups in 5 years'], geo_level, geo_code, session,
+        table_name='womenagegroupsin5years15to44_%s' % geo_level,
         order_by='age groups in 5 years'
     )
 
@@ -89,10 +84,10 @@ def get_demographics_profile(geo_code, geo_level, session):
             "name": "Children under the age of nine years",
             "values": {"this": total_ecd}
         },
-        'child_bearing_age': child_bearing_age,
-        'total_child_bearing_age': {
-            "name": "Women of child bearing age(15-44 years old)",
-            "values": {"this": total_child_bearing_age}
+        'women_child_bearing_age': women_child_bearing_age,
+        'total_women_child_bearing_age': {
+            "name": "Women between the age of 15-44 years",
+            "values": {"this": total_women_child_bearing_age}
         }
     }
 
