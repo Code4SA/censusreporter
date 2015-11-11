@@ -122,7 +122,9 @@
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_ecd stat_type='number' %}
             </div>
-            <div class="column-half" id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Children by age in years"></div>
+            <div class="column-half">
+                <div id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Children by age in years" data-stat-type="scaled-percentage"></div>
+            </div>
         </section>
     </div>
     {% if demographics.child_population_density.values.this %}
@@ -132,7 +134,9 @@
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.child_population_density stat_type='number' %}
             </div>
-            <div class="column-half" id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre"></div>
+            <div class="column-half">
+                <div id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre"></div>
+            </div>
         </section>
     </div>
     {% endif %}
@@ -142,7 +146,9 @@
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_child_bearing_age stat_type='number' %}
             </div>
-            <div class="column-half" id="chart-histogram-demographics-child_bearing_age-Female" data-chart-title="Women of child bearing age (15-44 years old)"></div>
+            <div class="column-half">
+                <div id="chart-histogram-demographics-child_bearing_age-Female" data-chart-title="Women of child bearing age (15-44 years old)"></div>
+            </div>
         </section>
     </div>
 </article>
