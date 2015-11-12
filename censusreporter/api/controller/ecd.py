@@ -14,6 +14,7 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 PROFILE_SECTIONS = (
     'demographics',
+    "households",
 )
 
 ECD_AGE_CATEGORIES = {
@@ -26,6 +27,23 @@ ECD_AGE_CATEGORIES = {
     '6': '6-9',
     '7': '6-9',
     '8': '6-9'
+}
+
+TYPE_OF_DWELLING_RECODE = {
+    'House or brick/concrete block structure on a separate stand or yard or on a farm': 'House',
+    'Traditional dwelling/hut/structure made of traditional materials': 'Traditional',
+    'Flat or apartment in a block of flats': 'Apartment',
+    'Cluster house in complex': 'Cluster house',
+    'Townhouse (semi-detached house in a complex)': 'Townhouse',
+    'Semi-detached house': 'Semi-detached house',
+    'House/flat/room in backyard': 'Backyard in flat',
+    'Informal dwelling (shack; in backyard)': 'Shack',
+    'Informal dwelling (shack; not in backyard; e.g. in an informal/squatter settlement or on a farm)': 'Shack',
+    'Room/flatlet on a property or larger dwelling/servants quarters/granny flat': 'Room or flatlet',
+    'Caravan/tent': 'Caravan/tent',
+    'Other': 'Other',
+    'Unspecified': 'Unspecified',
+    'Not applicable': 'N/A',
 }
 
 
@@ -51,6 +69,9 @@ def get_ecd_profile(geo_code, geo_level):
                 for level, code in geo_summary_levels:
                     # merge summary profile into current geo profile
                     merge_dicts(data[section], func(code, level, session), level)
+
+        group_remainder(data['households']['type_of_dwelling_distribution'], 5)
+
         return data
 
     finally:
@@ -124,3 +145,50 @@ def get_demographics_profile(geo_code, geo_level, session):
         final_data['ecd_pop_density'] = ecd_pop_density
 
     return final_data
+
+def get_households_profile(geo_code, geo_level, session):
+    # head of household
+    # gender
+    head_gender_dist, total_households = get_stat_data(
+            ['gender of household head'], geo_level, geo_code, session,
+            order_by='gender of household head')
+    female_heads = head_gender_dist['Female']['numerators']['this']
+
+    # age
+    db_model_u18 = get_model_from_fields(
+        ['gender of head of household'], geo_level,
+        table_name='genderofheadofhouseholdunder18_%s' % geo_level
+    )
+    objects = get_objects_by_geo(db_model_u18, geo_code, geo_level, session)
+    total_under_18 = float(sum(o[0] for o in objects))
+
+    # type of dwelling
+    type_of_dwelling_dist, _ = get_stat_data(
+            ['type of dwelling'], geo_level, geo_code, session,
+            recode=TYPE_OF_DWELLING_RECODE,
+            order_by='-total')
+    informal = type_of_dwelling_dist['Shack']['numerators']['this']
+
+    return {'total_households': {
+                'name': 'Households',
+                'values': {'this': total_households},
+                },
+            'type_of_dwelling_distribution': type_of_dwelling_dist,
+            'informal': {
+                'name': 'Households that are informal dwellings (shacks)',
+                'values': {'this': percent(informal, total_households)},
+                'numerators': {'this': informal},
+                },
+            'head_of_household': {
+                'gender_distribution': head_gender_dist,
+                'female': {
+                    'name': 'Households with women as their head',
+                    'values': {'this': percent(female_heads, total_households)},
+                    'numerators': {'this': female_heads},
+                    },
+                'under_18': {
+                    'name': 'Households with heads under 18 years old',
+                    'values': {'this': total_under_18},
+                    }
+                },
+           }
