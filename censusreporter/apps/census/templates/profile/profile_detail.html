@@ -135,7 +135,7 @@
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.child_population_density stat_type='number' %}
             </div>
             <div class="column-half">
-                <div id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre"></div>
+                <div id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre" data-decimal-places="2"></div>
             </div>
         </section>
     </div>
@@ -341,6 +341,7 @@ var makeCharts = function() {
             chartChartShowYAxis = $(this).data('chart-show-y-axis'),
             chartInitialSort = $(this).data('initial-sort'),
             chartStatType = $(this).data('stat-type'),
+            chartDecimalPlaces = $(this).data('decimal-places'),
             chartQualifier = $(this).data('qualifier') || null,
             geographyData = profileData['geography'];
 
@@ -371,6 +372,7 @@ var makeCharts = function() {
             chartChartTitle: chartChartTitle,
             chartInitialSort: chartInitialSort,
             chartStatType: chartStatType,
+            chartDecimalPlaces: chartDecimalPlaces,
             geographyData: geographyData
         });
     });
