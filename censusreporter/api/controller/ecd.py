@@ -15,6 +15,7 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 PROFILE_SECTIONS = (
     'demographics',
     "households",
+    "service_delivery"
 )
 
 ECD_AGE_CATEGORIES = {
@@ -46,6 +47,32 @@ TYPE_OF_DWELLING_RECODE = {
     'Not applicable': 'N/A',
 }
 
+SHORT_WATER_SOURCE_CATEGORIES = {
+    "Regional/local water scheme (operated by municipality or other water services provider)": "Service provider",
+    "Water tanker": "Tanker",
+    "Spring": "Spring",
+    "Other": "Other",
+    "Dam/pool/stagnant water": "Dam",
+    "River/stream": "River",
+    "Not applicable": "N/A",
+    "Borehole": "Borehole",
+    "Rain water tank": "Rainwater tank",
+    "Water vendor": "Vendor",
+}
+
+COLLAPSED_TOILET_CATEGORIES = {
+    "Flush toilet (connected to sewerage system)": "Flush toilet",
+    "Flush toilet (with septic tank)": "Flush toilet",
+    "Chemical toilet": "Chemical toilet",
+    "Pit toilet with ventilation (VIP)": "Pit toilet",
+    "Pit toilet without ventilation": "Pit toilet",
+    "Bucket toilet": "Bucket toilet",
+    "Other": "Other",
+    "None": "None",
+    "Unspecified": "Unspecified",
+    "Not applicable": "N/A",
+}
+
 
 def get_ecd_profile(geo_code, geo_level):
     session = get_session()
@@ -71,6 +98,8 @@ def get_ecd_profile(geo_code, geo_level):
                     merge_dicts(data[section], func(code, level, session), level)
 
         group_remainder(data['households']['type_of_dwelling_distribution'], 5)
+        group_remainder(data['service_delivery']['water_source_distribution'], 5)
+        group_remainder(data['service_delivery']['toilet_facilities_distribution'], 5)
 
         return data
 
@@ -192,3 +221,99 @@ def get_households_profile(geo_code, geo_level, session):
                     }
                 },
            }
+
+def get_service_delivery_profile(geo_code, geo_level, session):
+    # water source
+    water_src_data, total_wsrc = get_stat_data(
+            ['source of water'], geo_level, geo_code, session,
+            recode=SHORT_WATER_SOURCE_CATEGORIES,
+            order_by='-total')
+    if 'Service provider' in water_src_data:
+        total_water_sp = water_src_data['Service provider']['numerators']['this']
+    else:
+        total_water_sp = 0.0
+
+    # electricity
+    elec_attrs = ['electricity for cooking',
+                  'electricity for heating',
+                  'electricity for lighting']
+    db_model_elec = get_model_from_fields(elec_attrs, geo_level)
+    objects = get_objects_by_geo(db_model_elec, geo_code, geo_level, session)
+    total_elec = 0.0
+    total_some_elec = 0.0
+    elec_access_data = {
+        'total_all_elec': {
+            "name": "Have electricity for everything",
+            "numerators": {"this": 0.0},
+        },
+        'total_some_not_all_elec': {
+            "name": "Have electricity for some things",
+            "numerators": {"this": 0.0},
+        },
+        'total_no_elec': {
+            "name": "No electricity",
+            "numerators": {"this": 0.0},
+        }
+    }
+    for obj in objects:
+        total_elec += obj.total
+        has_some = False
+        has_all = True
+        for attr in elec_attrs:
+            val = not getattr(obj, attr).startswith('no ')
+            has_all = has_all and val
+            has_some = has_some or val
+        if has_some:
+            total_some_elec += obj.total
+        if has_all:
+            elec_access_data['total_all_elec']['numerators']['this'] += obj.total
+        elif has_some:
+            elec_access_data['total_some_not_all_elec']['numerators']['this'] += obj.total
+        else:
+            elec_access_data['total_no_elec']['numerators']['this'] += obj.total
+
+    for data, total in zip((elec_access_data,), (total_elec,)):
+        for fields in data.values():
+            fields["values"] = {"this": percent(fields["numerators"]["this"], total)}
+
+    add_metadata(elec_access_data, db_model_elec)
+
+    # toilets
+    toilet_data, total_toilet = get_stat_data(
+            ['toilet facilities'], geo_level, geo_code, session,
+            exclude_zero=True,
+            recode=COLLAPSED_TOILET_CATEGORIES,
+            order_by='-total')
+
+    total_flush_toilet = 0.0
+    total_no_toilet = 0.0
+    for key, data in toilet_data.iteritems():
+        if key.startswith('Flush') or key.startswith('Chemical'):
+            total_flush_toilet += data['numerators']['this']
+        if key == 'None':
+            total_no_toilet += data['numerators']['this']
+
+    return {'water_source_distribution': water_src_data,
+            'percentage_water_from_service_provider': {
+                "name": "Are getting water from a regional or local service provider",
+                "numerators": {"this": total_water_sp},
+                "values": {"this": percent(total_water_sp, total_wsrc)},
+            },
+            'percentage_electricity_access': {
+                "name": "Have electricity for at least one of cooking, heating or lighting",
+                "numerators": {"this": total_some_elec},
+                "values": {"this": percent(total_some_elec, total_elec)},
+            },
+            'electricity_access_distribution': elec_access_data,
+            'percentage_flush_toilet_access': {
+                "name": "Have access to flush or chemical toilets",
+                "numerators": {"this": total_flush_toilet},
+                "values": {"this": percent(total_flush_toilet, total_toilet)},
+            },
+            'percentage_no_toilet_access': {
+                "name": "Have no access to any toilets",
+                "numerators": {"this": total_no_toilet},
+                "values": {"this": percent(total_no_toilet, total_toilet)},
+            },
+            'toilet_facilities_distribution': toilet_data,
+    }
