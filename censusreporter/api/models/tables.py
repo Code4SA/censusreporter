@@ -579,3 +579,11 @@ SimpleTable(
         dataset='2014 National Elections',
         year='2014'
         )
+SimpleTable(
+        id='hospitals_2012',
+        universe='Number of hospitals',
+        total_column='total_hospitals',
+        description='2012 number of hospitals',
+        dataset='2012 National Hospital Survey',
+        year='2012'
+        )
