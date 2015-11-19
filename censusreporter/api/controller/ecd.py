@@ -194,6 +194,7 @@ def get_services_profile(geo_code, geo_level, session):
     people_per_hospital = round(total_pop / total_hospitals, 2)
 
     table = get_datatable('schools_2015').table
+
     total_schools, primary_schools, combined_schools, \
     intermediate_schools, secondary_schools = session\
         .query(table.c.total_schools,
