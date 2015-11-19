@@ -184,7 +184,7 @@ def get_services_profile(geo_code, geo_level, session):
 
     table = get_datatable('hospitals_2012').table
     total_hospitals = session\
-            .query(table.c.total_hospitals) \
+            .query(table.c.total_hospitals,) \
             .filter(table.c.geo_level == geo_level) \
             .filter(table.c.geo_code == geo_code) \
             .first()[0]
@@ -192,6 +192,36 @@ def get_services_profile(geo_code, geo_level, session):
     # TODO: Add meta data
     # add_metadata(total_hospitals, hospitals_table)
     people_per_hospital = round(total_pop / total_hospitals, 2)
+
+    table = get_datatable('schools_2015').table
+    total_schools, primary_schools, combined_schools, \
+    intermediate_schools, secondary_schools = session\
+        .query(table.c.total_schools,
+               table.c.primary_schools,
+               table.c.combined_schools,
+               table.c.intermediate_schools,
+               table.c.secondary_schools) \
+        .filter(table.c.geo_level == geo_level) \
+        .filter(table.c.geo_code == geo_code) \
+        .first()
+
+    primary_school_ages = ['7', '8', '9', '10', '11', '12', '13']
+    secondary_school_ages = ['14', '15', '16', '17', '18']
+
+    _, primary_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=primary_school_ages)
+
+    _, secondary_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=secondary_school_ages)
+
+    # TODO: Add meta data
+
+    children_per_primary_school = round(primary_children / primary_schools, 2)
+    children_per_secondary_school = round(secondary_children / secondary_schools, 2)
 
     final_data = {
         "total_hospitals": {
@@ -202,6 +232,14 @@ def get_services_profile(geo_code, geo_level, session):
             "name": "Total number of people per hospital",
             "values": {"this": people_per_hospital}
         },
+        "children_per_primary_school": {
+            "name": "Total number of children between the age of 7-13 years per primary school",
+            "values": {"this": children_per_primary_school}
+        },
+        "children_per_secondary_school": {
+            "name": "Total number of children between the age of 14-18 years per secondary school",
+            "values": {"this": children_per_secondary_school}
+        }
     }
 
     return final_data

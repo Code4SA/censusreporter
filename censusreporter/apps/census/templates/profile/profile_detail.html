@@ -171,6 +171,17 @@
             </div>
         </section>
     </div>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Schools<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_primary_school stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_secondary_school stat_type='number' %}
+            </div>
+        </section>
+    </div>
 </article>
 
 <article id="service_delivery" class="clearfix">
