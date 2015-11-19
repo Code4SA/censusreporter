@@ -592,6 +592,6 @@ SimpleTable(
         universe='Number of schools',
         total_column='total_schools',
         description='2015 number of schools',
-        dataset='Q1 2015 National Ordinary Schools Msster List',
+        dataset='Q1 2015 National Ordinary Schools Master List',
         year='2015'
         )
