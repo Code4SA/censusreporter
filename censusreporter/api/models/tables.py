@@ -587,3 +587,11 @@ SimpleTable(
         dataset='2012 National Hospital Survey',
         year='2012'
         )
+SimpleTable(
+        id='schools_2015',
+        universe='Number of schools',
+        total_column='total_schools',
+        description='2015 number of schools',
+        dataset='Q1 2015 National Ordinary Schools Master List',
+        year='2015'
+        )
