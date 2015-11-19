@@ -22,7 +22,7 @@ SET default_with_oids = false;
 CREATE TABLE hospitals_2012 (
     geo_level character varying(16) NOT NULL,
     geo_code character varying(8) NOT NULL,
-    total_votes integer
+    total_hospitals integer
 );
 
 
@@ -32,7 +32,7 @@ ALTER TABLE hospitals_2012 OWNER TO census;
 -- Data for Name: hospitals_2012; Type: TABLE DATA; Schema: public; Owner: census
 --
 
-COPY hospitals_2012 (geo_level, geo_code, total_votes) FROM stdin;
+COPY hospitals_2012 (geo_level, geo_code, total_hospitals) FROM stdin;
 province	EC	603
 province	FS	251
 province	GT	388
