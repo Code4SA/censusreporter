@@ -14,6 +14,7 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 PROFILE_SECTIONS = (
     'demographics',
+    "services",
     "households",
     "service_delivery"
 )
@@ -174,6 +175,37 @@ def get_demographics_profile(geo_code, geo_level, session):
         final_data['ecd_pop_density'] = ecd_pop_density
 
     return final_data
+
+
+def get_services_profile(geo_code, geo_level, session):
+    # population group
+    _, total_pop = get_stat_data(
+            ['population group'], geo_level, geo_code, session)
+
+    table = get_datatable('hospitals_2012').table
+    total_hospitals = session\
+            .query(table.c.total_hospitals) \
+            .filter(table.c.geo_level == geo_level) \
+            .filter(table.c.geo_code == geo_code) \
+            .first()[0]
+
+    # TODO: Add meta data
+    # add_metadata(total_hospitals, hospitals_table)
+    people_per_hospital = round(total_pop / total_hospitals, 2)
+
+    final_data = {
+        "total_hospitals": {
+            "name": "Total number of hospitals",
+            "values": {"this": total_hospitals}
+        },
+        "people_per_hospital": {
+            "name": "Total number of people per hospital",
+            "values": {"this": people_per_hospital}
+        },
+    }
+
+    return final_data
+
 
 def get_households_profile(geo_code, geo_level, session):
     # head of household

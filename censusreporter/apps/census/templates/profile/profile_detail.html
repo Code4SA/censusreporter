@@ -156,6 +156,23 @@
     </div>
 </article>
 
+<article id="services" class="clearfix">
+    <header class="section-contents">
+        <h1>Services</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Hospitals and clinics<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_hospitals stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.people_per_hospital stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
 <article id="service_delivery" class="clearfix">
     <header class="section-contents">
         <h1>Households</h1>
