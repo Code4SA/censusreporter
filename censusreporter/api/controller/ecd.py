@@ -226,6 +226,25 @@ def get_services_profile(geo_code, geo_level, session):
         .filter(table.c.geo_code == geo_code) \
         .first()
 
+    school_breakdown = OrderedDict((
+        ("primary_schools", {
+            "name": "Primary schools",
+            "values": {"this": primary_schools or 0}
+        }),
+        ("combined_schools", {
+            "name": "Combined schools",
+            "values": {"this": combined_schools or 0}
+        }),
+        ("intermediate_schools", {
+            "name": "Intermediate schools",
+            "values": {"this": intermediate_schools or 0}
+        }),
+        ("secondary_schools", {
+            "name": "Secondary schools",
+            "values": {"this": secondary_schools or 0}
+        }),
+    ))
+
     primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
 
@@ -269,6 +288,11 @@ def get_services_profile(geo_code, geo_level, session):
             "name": "People in the region for each hospital",
             "values": {"this": people_per_hospital}
         },
+        'total_schools': {
+            "name": "Schools",
+            "values": {"this": total_schools}
+        },
+        "school_breakdown": school_breakdown,
         "children_per_primary_school": {
             "name": "Children (6-13 years) in the region for each primary school",
             "values": {"this": children_per_primary_school}
