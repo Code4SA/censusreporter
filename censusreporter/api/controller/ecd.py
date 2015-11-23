@@ -182,6 +182,23 @@ def get_services_profile(geo_code, geo_level, session):
     _, total_pop = get_stat_data(
             ['population group'], geo_level, geo_code, session)
 
+    # ECD Centres
+    ecd_age_groups, total_ecd = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=['0', '1', '2', '3', '4', '5'],
+        recode=ECD_AGE_CATEGORIES)
+
+    table = get_datatable('ecd_centres_2014').table
+    total_ecd_centres = session. \
+        query(table.c.total_ecd_centres). \
+        filter(table.c.geo_level == geo_level). \
+        filter(table.c.geo_code == geo_code). \
+        first()[0]
+
+    total_ecd_children_per_centre = round(total_ecd / total_ecd_centres, 2)
+
+    # Hospitals
     table = get_datatable('hospitals_2012').table
     total_hospitals = session\
             .query(table.c.total_hospitals,) \
@@ -193,6 +210,8 @@ def get_services_profile(geo_code, geo_level, session):
     # add_metadata(total_hospitals, hospitals_table)
     people_per_hospital = round(total_pop / total_hospitals, 2)
 
+
+    # Schools
     table = get_datatable('schools_2015').table
 
     total_schools, primary_schools, combined_schools, \
@@ -225,6 +244,14 @@ def get_services_profile(geo_code, geo_level, session):
     children_per_secondary_school = round(secondary_children / secondary_schools, 2)
 
     final_data = {
+        "total_ecd_centres": {
+            "name": "Total number of ECD centres",
+            "values": {"this": total_ecd_centres}
+        },
+        "children_per_ecd_centre": {
+            "name": "Total number of children between the age of 0-5 years per ECD Centre",
+            "values": {"this": total_ecd_children_per_centre}
+        },
         "total_hospitals": {
             "name": "Total number of hospitals",
             "values": {"this": total_hospitals}
