@@ -169,6 +169,12 @@
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_ecd_centre stat_type='number' %}
             </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_0_to_2_per_ecd_centre stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_3_to_5_per_ecd_centre stat_type='number' %}
+            </div>
         </section>
     </div>
     <div class="section-container">

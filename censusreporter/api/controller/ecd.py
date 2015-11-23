@@ -187,7 +187,8 @@ def get_services_profile(geo_code, geo_level, session):
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
         only=['0', '1', '2', '3', '4', '5'],
-        recode=ECD_AGE_CATEGORIES)
+        recode=ECD_AGE_CATEGORIES,
+        percent=False)
 
     table = get_datatable('ecd_centres_2014').table
     total_ecd_centres = session. \
@@ -196,7 +197,10 @@ def get_services_profile(geo_code, geo_level, session):
         filter(table.c.geo_code == geo_code). \
         first()[0]
 
+    import ipdb; ipdb.set_trace()
     total_ecd_children_per_centre = round(total_ecd / total_ecd_centres, 2)
+    ecd_0_to_2_per_centre = round(ecd_age_groups['0-2']['values']['this'] / total_ecd_centres, 2)
+    ecd_3_to_5_per_centre = round(ecd_age_groups['3-5']['values']['this'] / total_ecd_centres, 2)
 
     # Hospitals
     table = get_datatable('hospitals_2012').table
@@ -251,6 +255,14 @@ def get_services_profile(geo_code, geo_level, session):
         "children_per_ecd_centre": {
             "name": "Total number of children between the age of 0-5 years per ECD Centre",
             "values": {"this": total_ecd_children_per_centre}
+        },
+        "children_0_to_2_per_ecd_centre": {
+            "name": "Total number of children between the age of 0-2 years per ECD Centre",
+            "values": {"this": ecd_0_to_2_per_centre}
+        },
+        "children_3_to_5_per_ecd_centre": {
+            "name": "Total number of children between the age of 3-5 years per ECD Centre",
+            "values": {"this": ecd_3_to_5_per_centre}
         },
         "total_hospitals": {
             "name": "Total number of hospitals",
