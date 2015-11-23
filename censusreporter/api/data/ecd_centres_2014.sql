@@ -33,14 +33,16 @@ ALTER TABLE ecd_centres_2014 OWNER TO census;
 --
 
 COPY ecd_centres_2014 (geo_level, geo_code, total_ecd_centres) FROM stdin;
+country	ZA	21729
 province	EC	2311
 province	FS	1995
 province	GT	4254
 province	KZN	2470
 province	LIM	3383
 province	MP	1981
-province	NC	4268
+province	NC	541
 province	NW	1067
+province	WC	3727
 district	BUF	590
 district	CPT	2172
 district	DC1	187
@@ -3756,7 +3758,6 @@ ward	94705029	9
 ward	94705030	7
 ward	94705031	1
 ward	94705038	1
-country	ZA	21729
 \.
 
 
