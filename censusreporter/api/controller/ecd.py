@@ -209,6 +209,41 @@ def get_services_profile(geo_code, geo_level, session):
             .filter(table.c.geo_code == geo_code) \
             .first()[0]
 
+    total_hospitals, regional_hospitals, central_hospitals, \
+    district_hospitals, clinics, chcs = session\
+        .query(table.c.total_hospitals,
+               table.c.regional_hospital,
+               table.c.central_hospital,
+               table.c.district_hospital,
+               table.c.clinic,
+               table.c.chc) \
+        .filter(table.c.geo_level == geo_level) \
+        .filter(table.c.geo_code == geo_code) \
+        .first()
+
+    hospital_breakdown = OrderedDict((
+        ("regional_hospitals", {
+            "name": "Regional Hospitals",
+            "values": {"this": regional_hospitals or 0}
+        }),
+        ("central_hospitals", {
+            "name": "Central Hospitals",
+            "values": {"this": central_hospitals or 0}
+        }),
+        ("district_hospitals", {
+            "name": "District hospitals",
+            "values": {"this": district_hospitals or 0}
+        }),
+        ("clinics", {
+            "name": "Clinics",
+            "values": {"this": clinics or 0}
+        }),
+        ("chcs", {
+            "name": "Community health clinics",
+            "values": {"this": chcs or 0}
+        }),
+    ))
+
     # TODO: Add meta data
     people_per_hospital = round(total_pop / total_hospitals, 2)
 
@@ -281,11 +316,12 @@ def get_services_profile(geo_code, geo_level, session):
             "values": {"this": ecd_3_to_5_per_centre}
         },
         "total_hospitals": {
-            "name": "Hospitals",
+            "name": "Hospitals / Clinics",
             "values": {"this": total_hospitals}
         },
+        "hospital_breakdown": hospital_breakdown,
         "people_per_hospital": {
-            "name": "People in the region for each hospital",
+            "name": "People in the region for each hospital/clinic",
             "values": {"this": people_per_hospital}
         },
         'total_schools': {
