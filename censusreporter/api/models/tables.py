@@ -595,3 +595,11 @@ SimpleTable(
         dataset='Q1 2015 National Ordinary Schools Master List',
         year='2015'
         )
+SimpleTable(
+        id='ecd_centres_2014',
+        universe='Number of ECD Centres',
+        total_column='total_ecd_centres',
+        description='2014 number of ECD centres',
+        dataset='Audit of ECD Centres - National Report',
+        year='2014'
+        )

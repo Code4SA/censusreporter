@@ -40,8 +40,6 @@ COPY schools_2015 (geo_level, geo_code, combined_schools, intermediate_schools, 
 province	EC	2133	3	2702	892	5730
 province	FS	100	211	768	253	1332
 province	GT	318	134	1624	759	2835
-province	KZ	539	144	3852	1616	6151
-province	LP	172	16	2512	1366	4066
 province	MP	244	40	1107	484	1875
 province	NC	114	25	320	118	581
 province	NW	216	71	972	305	1564
@@ -3930,6 +3928,9 @@ ward	93607031	1	\N	3	2	6
 ward	93607032	\N	\N	2	1	3
 ward	98402027	\N	\N	1	\N	1
 ward	98402033	\N	\N	1	\N	1
+country	ZA	3937	745	14941	6164	25827
+province	LIM	172	16	2512	1366	4066
+province	KZN	539	144	3852	1616	6151
 \.
 
 

@@ -156,6 +156,51 @@
     </div>
 </article>
 
+<article id="services" class="clearfix">
+    <header class="section-contents">
+        <h1>Services</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#services_ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_ecd_centres stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_ecd_centre stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_0_to_2_per_ecd_centre stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_3_to_5_per_ecd_centre stat_type='number' %}
+            </div>
+        </section>
+    </div>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Hospitals and clinics<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_hospitals stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.people_per_hospital stat_type='number' %}
+            </div>
+        </section>
+    </div>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Schools<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_primary_school stat_type='number' %}
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_secondary_school stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
 <article id="service_delivery" class="clearfix">
     <header class="section-contents">
         <h1>Households</h1>

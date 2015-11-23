@@ -14,6 +14,7 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 PROFILE_SECTIONS = (
     'demographics',
+    "services",
     "households",
     "service_delivery"
 )
@@ -134,7 +135,7 @@ def get_demographics_profile(geo_code, geo_level, session):
         },
         'ecd_age_groups': ecd_age_groups,
         'total_ecd': {
-            "name": "Children under the age of nine years",
+            "name": "Children under the age of 9 years",
             "values": {"this": total_ecd}
         },
         'ecd_gender': ecd_gender,
@@ -152,7 +153,7 @@ def get_demographics_profile(geo_code, geo_level, session):
             'values': {"this": total_pop / geo.square_kms}
         }
         final_data['child_population_density'] = {
-            'name': 'Children under the age of nine years per square kilometre',
+            'name': 'Children (0-9 years) per square kilometre',
             'values': {"this": total_ecd / geo.square_kms}
         }
 
@@ -174,6 +175,112 @@ def get_demographics_profile(geo_code, geo_level, session):
         final_data['ecd_pop_density'] = ecd_pop_density
 
     return final_data
+
+
+def get_services_profile(geo_code, geo_level, session):
+    # population group
+    _, total_pop = get_stat_data(
+            ['population group'], geo_level, geo_code, session)
+
+    # ECD Centres
+    ecd_age_groups, total_ecd = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=['0', '1', '2', '3', '4', '5'],
+        recode=ECD_AGE_CATEGORIES,
+        percent=False)
+
+    table = get_datatable('ecd_centres_2014').table
+    total_ecd_centres = session. \
+        query(table.c.total_ecd_centres). \
+        filter(table.c.geo_level == geo_level). \
+        filter(table.c.geo_code == geo_code). \
+        first()[0]
+
+    total_ecd_children_per_centre = round(total_ecd / total_ecd_centres, 2)
+    ecd_0_to_2_per_centre = round(ecd_age_groups['0-2']['values']['this'] / total_ecd_centres, 2)
+    ecd_3_to_5_per_centre = round(ecd_age_groups['3-5']['values']['this'] / total_ecd_centres, 2)
+
+    # Hospitals
+    table = get_datatable('hospitals_2012').table
+    total_hospitals = session\
+            .query(table.c.total_hospitals,) \
+            .filter(table.c.geo_level == geo_level) \
+            .filter(table.c.geo_code == geo_code) \
+            .first()[0]
+
+    # TODO: Add meta data
+    people_per_hospital = round(total_pop / total_hospitals, 2)
+
+    # Schools
+    table = get_datatable('schools_2015').table
+
+    total_schools, primary_schools, combined_schools, \
+    intermediate_schools, secondary_schools = session\
+        .query(table.c.total_schools,
+               table.c.primary_schools,
+               table.c.combined_schools,
+               table.c.intermediate_schools,
+               table.c.secondary_schools) \
+        .filter(table.c.geo_level == geo_level) \
+        .filter(table.c.geo_code == geo_code) \
+        .first()
+
+    primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
+    secondary_school_ages = ['14', '15', '16', '17', '18']
+
+    _, total_primary_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=primary_school_ages)
+
+    _, total_secondary_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=secondary_school_ages)
+
+    # TODO: Add meta data
+
+    children_per_primary_school = round(total_primary_children / primary_schools, 2)
+    children_per_secondary_school = round(total_secondary_children / secondary_schools, 2)
+
+    final_data = {
+        "total_ecd_centres": {
+            "name": "ECD centres",
+            "values": {"this": total_ecd_centres}
+        },
+        "children_per_ecd_centre": {
+            "name": "Children (0-5 years) in the region for each ECD Centre",
+            "values": {"this": total_ecd_children_per_centre}
+        },
+        "children_0_to_2_per_ecd_centre": {
+            "name": "Children (0-2 years) in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_2_per_centre}
+        },
+        "children_3_to_5_per_ecd_centre": {
+            "name": "Children (3-5 years) in the region for each ECD Centre",
+            "values": {"this": ecd_3_to_5_per_centre}
+        },
+        "total_hospitals": {
+            "name": "Hospitals",
+            "values": {"this": total_hospitals}
+        },
+        "people_per_hospital": {
+            "name": "People in the region for each hospital",
+            "values": {"this": people_per_hospital}
+        },
+        "children_per_primary_school": {
+            "name": "Children (6-13 years) in the region for each primary school",
+            "values": {"this": children_per_primary_school}
+        },
+        "children_per_secondary_school": {
+            "name": "Children (14-18 years) for each secondary school",
+            "values": {"this": children_per_secondary_school}
+        }
+    }
+
+    return final_data
+
 
 def get_households_profile(geo_code, geo_level, session):
     # head of household
