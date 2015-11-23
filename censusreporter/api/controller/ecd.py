@@ -135,7 +135,7 @@ def get_demographics_profile(geo_code, geo_level, session):
         },
         'ecd_age_groups': ecd_age_groups,
         'total_ecd': {
-            "name": "Children under the age of nine years",
+            "name": "Children under the age of 9 years",
             "values": {"this": total_ecd}
         },
         'ecd_gender': ecd_gender,
@@ -153,7 +153,7 @@ def get_demographics_profile(geo_code, geo_level, session):
             'values': {"this": total_pop / geo.square_kms}
         }
         final_data['child_population_density'] = {
-            'name': 'Children under the age of nine years per square kilometre',
+            'name': 'Children (0-9 years) per square kilometre',
             'values': {"this": total_ecd / geo.square_kms}
         }
 
@@ -226,7 +226,7 @@ def get_services_profile(geo_code, geo_level, session):
         .filter(table.c.geo_code == geo_code) \
         .first()
 
-    primary_school_ages = ['7', '8', '9', '10', '11', '12', '13']
+    primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
 
     _, total_primary_children = get_stat_data(
@@ -246,35 +246,35 @@ def get_services_profile(geo_code, geo_level, session):
 
     final_data = {
         "total_ecd_centres": {
-            "name": "Total number of ECD centres",
+            "name": "ECD centres",
             "values": {"this": total_ecd_centres}
         },
         "children_per_ecd_centre": {
-            "name": "Total number of children between the age of 0-5 years per ECD Centre",
+            "name": "Children (0-5 years) in the region for each ECD Centre",
             "values": {"this": total_ecd_children_per_centre}
         },
         "children_0_to_2_per_ecd_centre": {
-            "name": "Total number of children between the age of 0-2 years per ECD Centre",
+            "name": "Children (0-2 years) in the region for each ECD Centre",
             "values": {"this": ecd_0_to_2_per_centre}
         },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Total number of children between the age of 3-5 years per ECD Centre",
+            "name": "Children (3-5 years) in the region for each ECD Centre",
             "values": {"this": ecd_3_to_5_per_centre}
         },
         "total_hospitals": {
-            "name": "Total number of hospitals",
+            "name": "Hospitals",
             "values": {"this": total_hospitals}
         },
         "people_per_hospital": {
-            "name": "Total number of people per hospital",
+            "name": "People in the region for each hospital",
             "values": {"this": people_per_hospital}
         },
         "children_per_primary_school": {
-            "name": "Total number of children between the age of 7-13 years per primary school",
+            "name": "Children (6-13 years) in the region for each primary school",
             "values": {"this": children_per_primary_school}
         },
         "children_per_secondary_school": {
-            "name": "Total number of children between the age of 14-18 years per secondary school",
+            "name": "Children (14-18 years) for each secondary school",
             "values": {"this": children_per_secondary_school}
         }
     }
