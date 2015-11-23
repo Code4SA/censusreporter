@@ -197,7 +197,6 @@ def get_services_profile(geo_code, geo_level, session):
         filter(table.c.geo_code == geo_code). \
         first()[0]
 
-    import ipdb; ipdb.set_trace()
     total_ecd_children_per_centre = round(total_ecd / total_ecd_centres, 2)
     ecd_0_to_2_per_centre = round(ecd_age_groups['0-2']['values']['this'] / total_ecd_centres, 2)
     ecd_3_to_5_per_centre = round(ecd_age_groups['3-5']['values']['this'] / total_ecd_centres, 2)
@@ -211,9 +210,7 @@ def get_services_profile(geo_code, geo_level, session):
             .first()[0]
 
     # TODO: Add meta data
-    # add_metadata(total_hospitals, hospitals_table)
     people_per_hospital = round(total_pop / total_hospitals, 2)
-
 
     # Schools
     table = get_datatable('schools_2015').table
@@ -232,20 +229,20 @@ def get_services_profile(geo_code, geo_level, session):
     primary_school_ages = ['7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
 
-    _, primary_children = get_stat_data(
+    _, total_primary_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
         only=primary_school_ages)
 
-    _, secondary_children = get_stat_data(
+    _, total_secondary_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
         only=secondary_school_ages)
 
     # TODO: Add meta data
 
-    children_per_primary_school = round(primary_children / primary_schools, 2)
-    children_per_secondary_school = round(secondary_children / secondary_schools, 2)
+    children_per_primary_school = round(total_primary_children / primary_schools, 2)
+    children_per_secondary_school = round(total_secondary_children / secondary_schools, 2)
 
     final_data = {
         "total_ecd_centres": {
