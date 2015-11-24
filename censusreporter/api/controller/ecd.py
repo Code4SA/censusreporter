@@ -239,7 +239,7 @@ def get_services_profile(geo_code, geo_level, session):
             "values": {"this": clinics or 0}
         }),
         ("chcs", {
-            "name": "Community health clinics",
+            "name": "Community health centres",
             "values": {"this": chcs or 0}
         }),
     ))
