@@ -195,15 +195,17 @@ def get_services_profile(geo_code, geo_level, session):
         query(table.c.total_ecd_centres). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
-        first() or 0.0
+        first() or 0
 
-    ecd_registered, ecd_conditional, ecd_unregistered = session. \
+    ecd_centres = session. \
         query(table.c.reg_full,
               table.c.reg_conditional,
               table.c.reg_not_registered). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
         first() or [0.0, 0.0, 0.0]
+
+    ecd_registered, ecd_conditional, ecd_unregistered = (i or 0.0 for i in ecd_centres)
 
     if total_ecd_centres:
         total_ecd_centres = float(total_ecd_centres[0])
@@ -246,8 +248,7 @@ def get_services_profile(geo_code, geo_level, session):
             .filter(table.c.geo_code == geo_code) \
             .first() or 0.0
 
-    total_hospitals, regional_hospitals, central_hospitals, \
-    district_hospitals, clinics, chcs = session\
+    hospitals = session\
         .query(table.c.total_hospitals,
                table.c.regional_hospital,
                table.c.central_hospital,
@@ -257,6 +258,9 @@ def get_services_profile(geo_code, geo_level, session):
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
         .first() or [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    total_hospitals, regional_hospitals, central_hospitals, \
+    district_hospitals, clinics, chcs = (i or 0.0 for i in hospitals )
 
     hospital_breakdown = OrderedDict((
         ("regional_hospitals", {
@@ -287,8 +291,7 @@ def get_services_profile(geo_code, geo_level, session):
     # Schools
     table = get_datatable('schools_2015').table
 
-    total_schools, primary_schools, combined_schools, \
-    intermediate_schools, secondary_schools = session\
+    schools = session\
         .query(table.c.total_schools,
                table.c.primary_schools,
                table.c.combined_schools,
@@ -297,6 +300,9 @@ def get_services_profile(geo_code, geo_level, session):
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
         .first() or [0.0, 0.0, 0.0, 0.0, 0.0]
+
+    total_schools, primary_schools, combined_schools, \
+    intermediate_schools, secondary_schools = (i or 0.0 for i in schools)
 
     school_breakdown = OrderedDict((
         ("primary_schools", {
