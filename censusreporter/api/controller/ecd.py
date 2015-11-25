@@ -359,7 +359,7 @@ def get_services_profile(geo_code, geo_level, session):
         },
         "hospital_breakdown": hospital_breakdown,
         "people_per_hospital": {
-            "name": "People in the region for each hospital/clinic",
+            "name": "People in the region for each hospital / clinic",
             "values": {"this": people_per_hospital}
         },
         'total_schools': {

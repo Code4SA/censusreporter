@@ -146,10 +146,10 @@
     <div class="section-container">
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#women_child_bearing_age" id="women_child_bearing_age">Women of child bearing age<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_women_child_bearing_age stat_type='number' %}
             </div>
-            <div class="column-half">
+            <div class="column-two-thirds">
                 <div id="chart-histogram-demographics-women_child_bearing_age" data-chart-title="Women by age in years" data-stat-type="scaled-percentage"></div>
             </div>
         </section>
@@ -163,24 +163,27 @@
     <div class="section-container">
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#services_ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.total_ecd_centres stat_type='number' %}
             </div>
-            <div class="column-quarter">
+            <div class="column-two-thirds" id="chart-pie-services-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
+
+        </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_ecd_centre stat_type='number' %}
             </div>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_0_to_2_per_ecd_centre stat_type='number' %}
             </div>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_3_to_5_per_ecd_centre stat_type='number' %}
             </div>
-            <div class="column-third" id="chart-pie-services-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
         </section>
     </div>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Hospitals and clinics<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Hospitals / Clinics<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.total_hospitals stat_type='number' %}
             </div>
@@ -195,21 +198,19 @@
     <div class="section-container">
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Schools<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.total_schools stat_type='number' %}
             </div>
-            <div class="column-half">
+            <div class="column-two-thirds">
                 <div id="chart-histogram-services-school_breakdown" data-chart-title="Number of schools by phase" data-decimal-places="2"></div>
             </div>
         </section>
-    </div>
-    <div class="section-container">
-        <section class="clearfix stat-row">
+        <section class="clearfix stat-row grouped-row">
             <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Schools<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_primary_school stat_type='number' %}
             </div>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_secondary_school stat_type='number' %}
             </div>
         </section>
