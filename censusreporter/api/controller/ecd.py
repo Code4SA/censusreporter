@@ -195,7 +195,7 @@ def get_services_profile(geo_code, geo_level, session):
         query(table.c.total_ecd_centres). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
-        first() or 0
+        first() or 0.0
 
     ecd_registered, ecd_conditional, ecd_unregistered = session. \
         query(table.c.reg_full,
@@ -203,10 +203,10 @@ def get_services_profile(geo_code, geo_level, session):
               table.c.reg_not_registered). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
-        first() or [0, 0, 0]
+        first() or [0.0, 0.0, 0.0]
 
     if total_ecd_centres:
-        total_ecd_centres = total_ecd_centres[0]
+        total_ecd_centres = float(total_ecd_centres[0])
         ecd_0_to_5_per_centre = ratio(total_ecd, total_ecd_centres)
         ecd_0_to_2_per_centre = ratio(ecd_age_groups['0-2']['values']['this'], total_ecd_centres)
         ecd_3_to_5_per_centre = ratio(ecd_age_groups['3-5']['values']['this'], total_ecd_centres)
@@ -235,7 +235,7 @@ def get_services_profile(geo_code, geo_level, session):
             "name": "Other",
             "values": {"this": percent(ecd_other, total_ecd_centres)},
             "numerators": {"this": ecd_other}
-        })
+        }),
     ))
 
     # Hospitals
@@ -244,7 +244,7 @@ def get_services_profile(geo_code, geo_level, session):
             .query(table.c.total_hospitals,) \
             .filter(table.c.geo_level == geo_level) \
             .filter(table.c.geo_code == geo_code) \
-            .first() or 0
+            .first() or 0.0
 
     total_hospitals, regional_hospitals, central_hospitals, \
     district_hospitals, clinics, chcs = session\
@@ -256,28 +256,28 @@ def get_services_profile(geo_code, geo_level, session):
                table.c.chc) \
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
-        .first() or [0, 0, 0, 0, 0, 0]
+        .first() or [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     hospital_breakdown = OrderedDict((
         ("regional_hospitals", {
             "name": "Regional Hospitals",
-            "values": {"this": regional_hospitals or 0}
+            "values": {"this": regional_hospitals or 0.0}
         }),
         ("central_hospitals", {
             "name": "Central Hospitals",
-            "values": {"this": central_hospitals or 0}
+            "values": {"this": central_hospitals or 0.0}
         }),
         ("district_hospitals", {
             "name": "District hospitals",
-            "values": {"this": district_hospitals or 0}
+            "values": {"this": district_hospitals or 0.0}
         }),
         ("clinics", {
             "name": "Clinics",
-            "values": {"this": clinics or 0}
+            "values": {"this": clinics or 0.0}
         }),
         ("chcs", {
             "name": "Community health centres",
-            "values": {"this": chcs or 0}
+            "values": {"this": chcs or 0.0}
         }),
     ))
 
@@ -296,24 +296,24 @@ def get_services_profile(geo_code, geo_level, session):
                table.c.secondary_schools) \
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
-        .first() or [0, 0, 0, 0, 0]
+        .first() or [0.0, 0.0, 0.0, 0.0, 0.0]
 
     school_breakdown = OrderedDict((
         ("primary_schools", {
             "name": "Primary schools",
-            "values": {"this": primary_schools or 0}
+            "values": {"this": primary_schools or 0.0}
         }),
         ("combined_schools", {
             "name": "Combined schools",
-            "values": {"this": combined_schools or 0}
+            "values": {"this": combined_schools or 0.0}
         }),
         ("intermediate_schools", {
             "name": "Intermediate schools",
-            "values": {"this": intermediate_schools or 0}
+            "values": {"this": intermediate_schools or 0.0}
         }),
         ("secondary_schools", {
             "name": "Secondary schools",
-            "values": {"this": secondary_schools or 0}
+            "values": {"this": secondary_schools or 0.0}
         }),
     ))
 
