@@ -7,9 +7,9 @@ from api.utils import get_session, LocationNotFound
 from api.controller.geography import get_geography
 
 
-from .utils import (collapse_categories, calculate_median, calculate_median_stat, get_summary_geo_info,
-                    merge_dicts, group_remainder, add_metadata, get_stat_data, get_objects_by_geo, percent,
-                    create_debug_dump)
+from .utils import (collapse_categories, calculate_median, calculate_median_stat,
+    get_summary_geo_info, merge_dicts, group_remainder, add_metadata, get_stat_data,
+    get_objects_by_geo, percent, ratio, create_debug_dump)
 
 
 PROFILE_SECTIONS = (
@@ -73,7 +73,6 @@ COLLAPSED_TOILET_CATEGORIES = {
     "Unspecified": "Unspecified",
     "Not applicable": "N/A",
 }
-
 
 def get_ecd_profile(geo_code, geo_level):
     session = get_session()
@@ -191,15 +190,53 @@ def get_services_profile(geo_code, geo_level, session):
         percent=False)
 
     table = get_datatable('ecd_centres_2014').table
+
     total_ecd_centres = session. \
         query(table.c.total_ecd_centres). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
-        first()[0]
+        first() or 0.0
 
-    total_ecd_children_per_centre = round(total_ecd / total_ecd_centres, 2)
-    ecd_0_to_2_per_centre = round(ecd_age_groups['0-2']['values']['this'] / total_ecd_centres, 2)
-    ecd_3_to_5_per_centre = round(ecd_age_groups['3-5']['values']['this'] / total_ecd_centres, 2)
+    ecd_registered, ecd_conditional, ecd_unregistered = session. \
+        query(table.c.reg_full,
+              table.c.reg_conditional,
+              table.c.reg_not_registered). \
+        filter(table.c.geo_level == geo_level). \
+        filter(table.c.geo_code == geo_code). \
+        first() or [0.0, 0.0, 0.0]
+
+    if total_ecd_centres:
+        total_ecd_centres = float(total_ecd_centres[0])
+        ecd_0_to_5_per_centre = ratio(total_ecd, total_ecd_centres)
+        ecd_0_to_2_per_centre = ratio(ecd_age_groups['0-2']['values']['this'], total_ecd_centres)
+        ecd_3_to_5_per_centre = ratio(ecd_age_groups['3-5']['values']['this'], total_ecd_centres)
+        ecd_other = total_ecd_centres - sum([ecd_registered, ecd_conditional, ecd_unregistered])
+    else:
+        total_ecd_centres = ecd_0_to_5_per_centre = \
+        ecd_0_to_2_per_centre = ecd_3_to_5_per_centre = ecd_other = 0
+
+    ecd_centre_breakdown = OrderedDict((
+        ("registered", {
+            "name": "Registered centres",
+            "values": {"this": percent(ecd_registered, total_ecd_centres)},
+            "numerators": {"this": ecd_registered},
+        }),
+        ("conditional", {
+            "name": "Conditionally registered",
+            "values": {"this": percent(ecd_conditional, total_ecd_centres)},
+            "numerators": {"this": ecd_conditional},
+        }),
+        ("unregistered", {
+            "name": "Unregistered centres",
+            "values": {"this": percent(ecd_unregistered, total_ecd_centres)},
+            "numerators": {"this": ecd_unregistered},
+        }),
+        ("other", {
+            "name": "Other",
+            "values": {"this": percent(ecd_other, total_ecd_centres)},
+            "numerators": {"this": ecd_other}
+        }),
+    ))
 
     # Hospitals
     table = get_datatable('hospitals_2012').table
@@ -207,10 +244,45 @@ def get_services_profile(geo_code, geo_level, session):
             .query(table.c.total_hospitals,) \
             .filter(table.c.geo_level == geo_level) \
             .filter(table.c.geo_code == geo_code) \
-            .first()[0]
+            .first() or 0.0
+
+    total_hospitals, regional_hospitals, central_hospitals, \
+    district_hospitals, clinics, chcs = session\
+        .query(table.c.total_hospitals,
+               table.c.regional_hospital,
+               table.c.central_hospital,
+               table.c.district_hospital,
+               table.c.clinic,
+               table.c.chc) \
+        .filter(table.c.geo_level == geo_level) \
+        .filter(table.c.geo_code == geo_code) \
+        .first() or [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+    hospital_breakdown = OrderedDict((
+        ("regional_hospitals", {
+            "name": "Regional Hospitals",
+            "values": {"this": regional_hospitals or 0.0}
+        }),
+        ("central_hospitals", {
+            "name": "Central Hospitals",
+            "values": {"this": central_hospitals or 0.0}
+        }),
+        ("district_hospitals", {
+            "name": "District hospitals",
+            "values": {"this": district_hospitals or 0.0}
+        }),
+        ("clinics", {
+            "name": "Clinics",
+            "values": {"this": clinics or 0.0}
+        }),
+        ("chcs", {
+            "name": "Community health centres",
+            "values": {"this": chcs or 0.0}
+        }),
+    ))
 
     # TODO: Add meta data
-    people_per_hospital = round(total_pop / total_hospitals, 2)
+    people_per_hospital = ratio(total_pop, total_hospitals)
 
     # Schools
     table = get_datatable('schools_2015').table
@@ -224,7 +296,26 @@ def get_services_profile(geo_code, geo_level, session):
                table.c.secondary_schools) \
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
-        .first()
+        .first() or [0.0, 0.0, 0.0, 0.0, 0.0]
+
+    school_breakdown = OrderedDict((
+        ("primary_schools", {
+            "name": "Primary schools",
+            "values": {"this": primary_schools or 0.0}
+        }),
+        ("combined_schools", {
+            "name": "Combined schools",
+            "values": {"this": combined_schools or 0.0}
+        }),
+        ("intermediate_schools", {
+            "name": "Intermediate schools",
+            "values": {"this": intermediate_schools or 0.0}
+        }),
+        ("secondary_schools", {
+            "name": "Secondary schools",
+            "values": {"this": secondary_schools or 0.0}
+        }),
+    ))
 
     primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
@@ -241,8 +332,8 @@ def get_services_profile(geo_code, geo_level, session):
 
     # TODO: Add meta data
 
-    children_per_primary_school = round(total_primary_children / primary_schools, 2)
-    children_per_secondary_school = round(total_secondary_children / secondary_schools, 2)
+    children_per_primary_school = ratio(total_primary_children, primary_schools)
+    children_per_secondary_school = ratio(total_secondary_children, secondary_schools)
 
     final_data = {
         "total_ecd_centres": {
@@ -251,8 +342,9 @@ def get_services_profile(geo_code, geo_level, session):
         },
         "children_per_ecd_centre": {
             "name": "Children (0-5 years) in the region for each ECD Centre",
-            "values": {"this": total_ecd_children_per_centre}
+            "values": {"this": ecd_0_to_5_per_centre}
         },
+        "ecd_centre_breakdown": ecd_centre_breakdown,
         "children_0_to_2_per_ecd_centre": {
             "name": "Children (0-2 years) in the region for each ECD Centre",
             "values": {"this": ecd_0_to_2_per_centre}
@@ -262,13 +354,19 @@ def get_services_profile(geo_code, geo_level, session):
             "values": {"this": ecd_3_to_5_per_centre}
         },
         "total_hospitals": {
-            "name": "Hospitals",
+            "name": "Hospitals / Clinics",
             "values": {"this": total_hospitals}
         },
+        "hospital_breakdown": hospital_breakdown,
         "people_per_hospital": {
-            "name": "People in the region for each hospital",
+            "name": "People in the region for each hospital / clinic",
             "values": {"this": people_per_hospital}
         },
+        'total_schools': {
+            "name": "Schools",
+            "values": {"this": total_schools}
+        },
+        "school_breakdown": school_breakdown,
         "children_per_primary_school": {
             "name": "Children (6-13 years) in the region for each primary school",
             "values": {"this": children_per_primary_school}
