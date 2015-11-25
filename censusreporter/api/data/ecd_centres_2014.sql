@@ -44,15 +44,6 @@ ALTER TABLE ecd_centres_2014 OWNER TO census;
 
 COPY ecd_centres_2014 (geo_level, geo_code, reg_conditional, reg_full, reg_in_process, reg_incomplete_access_denied, reg_incomplete_closed, reg_incomplete_completed_by_another_enumerator, reg_incomplete_not_found, reg_not_registered, reg_unspecified, total_ecd_centres, total_learners_accomodated) FROM stdin;
 country	ZA	1955	8217	2967	389	884	15	153	5143	2006	21729	923155
-provincial	EC	125	1058	403	50	78	\N	43	339	215	2311	77874
-provincial	FS	297	827	174	115	139	\N	10	233	200	1995	85103
-provincial	GT	93	1128	519	91	310	12	56	1609	436	4254	108558
-provincial	KZN	220	1436	271	13	19	\N	1	241	269	2470	107005
-provincial	LIM	816	967	343	\N	1	\N	\N	951	305	3383	136255
-provincial	MP	158	486	294	11	52	\N	\N	800	180	1981	54539
-provincial	NC	9	381	44	16	8	\N	8	63	12	541	176671
-provincial	NW	88	422	77	4	55	\N	1	345	75	1067	45809
-provincial	WC	149	1512	842	89	222	3	34	562	314	3727	131341
 district	BUF	24	227	125	43	48	\N	26	97	\N	590	15345
 district	CPT	86	838	635	46	124	1	32	375	35	2172	78268
 district	DC1	11	79	49	\N	6	\N	\N	31	11	187	7024
@@ -137,6 +128,10 @@ municipality	EC144	3	4	1	\N	\N	\N	\N	4	1	13	610
 municipality	EC153	3	23	3	\N	\N	\N	\N	23	3	55	1063
 municipality	EC154	6	9	6	3	\N	\N	\N	4	1	29	841
 municipality	EC155	2	29	9	\N	1	\N	8	11	\N	60	1867
+province	FS	297	827	174	115	139	\N	10	233	200	1995	85103
+province	MP	158	486	294	11	52	\N	\N	800	180	1981	54539
+province	NC	9	381	44	16	8	\N	8	63	12	541	176671
+province	NW	88	422	77	4	55	\N	1	345	75	1067	45809
 municipality	EC156	5	78	4	3	6	\N	1	3	1	101	2749
 municipality	EC157	8	51	26	\N	4	\N	3	17	\N	109	4785
 municipality	EC441	1	27	1	1	\N	\N	\N	4	\N	34	1191
@@ -3768,6 +3763,11 @@ ward	94705029	1	1	\N	\N	\N	\N	\N	7	\N	9	69
 ward	94705030	3	3	1	\N	\N	\N	\N	\N	\N	7	346
 ward	94705031	1	\N	\N	\N	\N	\N	\N	\N	\N	1	133
 ward	94705038	1	\N	\N	\N	\N	\N	\N	\N	\N	1	49
+province	EC	125	1058	403	50	78	\N	43	339	215	2311	77874
+province	GT	93	1128	519	91	310	12	56	1609	436	4254	108558
+province	KZN	220	1436	271	13	19	\N	1	241	269	2470	107005
+province	LIM	816	967	343	\N	1	\N	\N	951	305	3383	136255
+province	WC	149	1512	842	89	222	3	34	562	314	3727	131341
 \.
 
 
