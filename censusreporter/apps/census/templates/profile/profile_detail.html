@@ -129,9 +129,7 @@
                 <div id="chart-pie-demographics-ecd_gender" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Gender of children under the age of nine years"></div>
             </div>
         </section>
-    </div>
-    {% if demographics.child_population_density.values.this %}
-    <div class="section-container">
+        {% if demographics.child_population_density.values.this %}
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#ecd_pop_density" id="ecd_pop_density">Child population density<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
@@ -141,9 +139,7 @@
                 <div id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre" data-decimal-places="2"></div>
             </div>
         </section>
-    </div>
-    {% endif %}
-    <div class="section-container">
+        {% endif %}
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#women_child_bearing_age" id="women_child_bearing_age">Women of child bearing age<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
@@ -156,13 +152,13 @@
     </div>
 </article>
 
-<article id="services" class="clearfix">
+<article class="clearfix">
     <header class="section-contents">
-        <h1>Services</h1>
+        <h1>ECD Centres</h1>
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#services_ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.total_ecd_centres stat_type='number' %}
             </div>
@@ -181,9 +177,15 @@
             </div>
         </section>
     </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>Hospitals</h1>
+    </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Hospitals / Clinics<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#hospitals" id="hospitals">Hospitals / Clinics<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.total_hospitals stat_type='number' %}
             </div>
@@ -195,9 +197,15 @@
             </div>
         </section>
     </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>Schools</h1>
+    </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Schools<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Schools<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.total_schools stat_type='number' %}
             </div>
@@ -206,7 +214,6 @@
             </div>
         </section>
         <section class="clearfix stat-row grouped-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#services_hospitals" id="hospitals">Schools<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_primary_school stat_type='number' %}
             </div>
