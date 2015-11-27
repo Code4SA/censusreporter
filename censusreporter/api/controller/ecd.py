@@ -370,6 +370,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "numerators": {"this": ecd_other}
         }),
     ))
+    add_metadata(ecd_centre_breakdown, table)
 
     final_data = {
         "total_ecd_centres": {
