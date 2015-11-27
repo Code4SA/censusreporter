@@ -187,8 +187,8 @@ def add_metadata(data, model):
     if not 'metadata' in data:
         data['metadata'] = {}
 
-    if hasattr(model, 'field_table'):
-        data_table = model.field_table
+    if hasattr(model, 'data_table'):
+        data_table = model.data_table
         data['metadata']['table_id'] = data_table.id.upper()
         if data_table.universe:
             data['metadata']['universe'] = data_table.universe
