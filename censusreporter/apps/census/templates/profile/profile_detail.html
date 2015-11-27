@@ -59,7 +59,13 @@
                     {% if demographics.population_density.values.this %}
                     <span class="secondary">
                         <span class="value">{{ demographics.population_density.values.this|floatformat:"1" }}</span>
-                        <span class="name"> people per square kilometre</span>
+                        <span class="name"> {{ demographics.population_density.name }}</span>
+                    </span>
+                    {% endif %}
+                    {% if demographics.child_population_density.values.this %}
+                    <span class="secondary">
+                        <span class="value">{{ demographics.child_population_density.values.this|floatformat:"1" }}</span>
+                        <span class="name">{{ demographics.child_population_density.name }}</span>
                     </span>
                     {% endif %}
                 </div>
@@ -115,91 +121,115 @@
 
 <p class="explain">Interact with charts and statistics for additional information.</p>
 
-<article id="elections" class="clearfix">
-    <header class="section-contents">
-        <h1>Elections</h1>
-    </header>
-    <div class="section-container">
-
-        {% for key in election_list %}
-        {% with elections|get:key as election_data %}
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#{{ election_data.name }}" id="{{ election_data.name }}">{{ election_data.name.capitalize }} <i class="fa fa-link"></i></a></h2>
-            <aside>
-            </aside>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=election_data.registered_voters stat_type='number' %}
-            </div>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=election_data.average_turnout stat_type='percentage' %}
-            </div>
-            <div class="column-half" id="chart-histogram-elections-{{ key }}-party_distribution" data-stat-type="scaled-percentage" data-chart-title="Voters by party"></div>
-        </section>
-        {% endwith %}
-        {% endfor %}
-
-        {% if geography.this.geo_level == 'country' %}
-            <section class="clearfix stat-row">
-                <h2 class="header-for-columns"><a class="permalink" href="#elections_2014_media" id="elections_2014_media">Elections 2014 Media Coverage<i class="fa fa-link"></i></a></h2>
-                <div class="column-half" id="chart-pie-elections-national_2014-media_coverage-genders" data-stat-type="scaled-percentage" data-chart-title="Gender of politicians quoted by the media"></div>
-                <div class="column-half" id="chart-histogram-elections-national_2014-media_coverage-parties" data-stat-type="scaled-percentage" data-chart-title="Media coverage by political party"></div>
-            </section>
-        {% endif %}
-
-    </div>
-</article>
-
-<article id="demographics" class="clearfix">
+<article id="ecd_ages" class="clearfix">
     <header class="section-contents">
         <h1>Demographics</h1>
     </header>
     <div class="section-container">
-
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#age" id="age">Age <i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_age_groups" id="age_groups">Early childhood age groups<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.median_age stat_type='number' %}
-            </div>
-            <div class="column-half" id="chart-histogram-demographics-age_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Population by age range"></div>
-            <div class="column-quarter" id="chart-pie-demographics-age_category_distribution" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Population by age category"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#pop_count" id="pop_count">Population <i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_population stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_ecd stat_type='number' %}
             </div>
             <div class="column-half">
-                <div id="chart-column-demographics-population_group_distribution" data-stat-type="scaled-percentage" data-chart-title="Population group"></div>
+                <div id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Children by age in years" data-stat-type="scaled-percentage"></div>
             </div>
             <div class="column-quarter">
-                <div id="chart-pie-demographics-sex_ratio" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Sex"></div>
+                <div id="chart-pie-demographics-ecd_gender" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Gender of children under the age of nine years"></div>
             </div>
         </section>
+        {% if demographics.child_population_density.values.this %}
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#language" id="language">Language <i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_pop_density" id="ecd_pop_density">Child population density<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.language_most_spoken stat_type='name' stat_name='Language most spoken at home' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.child_population_density stat_type='number' %}
             </div>
-            <div class="column-three-quarters">
-                <div id="chart-histogram-demographics-language_distribution" data-stat-type="scaled-percentage" data-chart-title="Population by language most spoken at home"></div>
+            <div class="column-half">
+                <div id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre" data-decimal-places="2"></div>
             </div>
         </section>
+        {% endif %}
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#migration" id="migration">Migration <i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.born_in_south_africa stat_type='percentage' stat_name='Born in South Africa' %}
+            <h2 class="header-for-columns"><a class="permalink" href="#women_child_bearing_age" id="women_child_bearing_age">Women of child bearing age<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.total_women_child_bearing_age stat_type='number' %}
             </div>
-            <div class="column-half" id="chart-column-demographics-province_of_birth_distribution" data-stat-type="scaled-percentage" data-chart-title="Province of birth"></div>
-            <div class="column-quarter" id="chart-pie-demographics-region_of_birth_distribution" data-stat-type="scaled-percentage" data-chart-title="Region of birth"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#citizenship" id="citizenship">Citizenship <i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=demographics.citizenship_south_african stat_type='percentage' stat_name='South African citizens' %}
+            <div class="column-two-thirds">
+                <div id="chart-histogram-demographics-women_child_bearing_age" data-chart-title="Women by age in years" data-stat-type="scaled-percentage"></div>
             </div>
-            <div class="column-quarter" id="chart-pie-demographics-citizenship_distribution" data-stat-type="percentage" data-chart-title="South African citizenship"></div>
         </section>
+    </div>
+</article>
 
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>ECD Centres</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_ecd_centres stat_type='number' %}
+            </div>
+            <div class="column-two-thirds" id="chart-pie-services-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
+
+        </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_ecd_centre stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_0_to_2_per_ecd_centre stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_3_to_5_per_ecd_centre stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>Hospitals</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#hospitals" id="hospitals">Hospitals / Clinics<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_hospitals stat_type='number' %}
+            </div>
+            <div class="column-half">
+                <div id="chart-histogram-services-hospital_breakdown" data-chart-title="Type of medical centre" data-decimal-places="2"></div>
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.people_per_hospital stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>Schools</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Schools<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_schools stat_type='number' %}
+            </div>
+            <div class="column-two-thirds">
+                <div id="chart-histogram-services-school_breakdown" data-chart-title="Number of schools by phase" data-decimal-places="2"></div>
+            </div>
+        </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_primary_school stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_secondary_school stat_type='number' %}
+            </div>
+        </section>
     </div>
 </article>
 
@@ -208,7 +238,6 @@
         <h1>Households</h1>
     </header>
     <div class="section-container">
-
         <section class="clearfix stat-row">
             <h2><a class="permalink" href="#households" id="households">Households <i class="fa fa-link"></i></a></h2>
             <div class="column-third">
@@ -220,13 +249,6 @@
             <div class="column-third" id="chart-pie-households-type_of_dwelling_distribution" data-stat-type="percentage" data-chart-title="Households by type of dwelling"></div>
         </section>
         <section class="clearfix stat-row grouped-row">
-            <h2><a class="permalink" href="#tenure" id="tenure">Household ownership <i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=households.owned stat_type='percentage' %}
-            </div>
-            <div class="column-third" id="chart-pie-households-tenure_distribution" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Households by ownership"></div>
-        </section>
-        <section class="clearfix stat-row grouped-row">
             <h2><a class="permalink" href="#household-head" id="household-head">Head of household <i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=households.head_of_household.female stat_type='percentage' %}
@@ -235,20 +257,6 @@
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=households.head_of_household.under_18 stat_type='number' %}
             </div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#household-income" id="household-income">Annual household income<i class="fa fa-link"></i></a></h2>
-            <aside>
-                Average annual household income is a median estimate, be careful with this value.
-            </aside>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=households.median_annual_income stat_type='dollar' %}
-            </div>
-            <div class="column-three-quarters" id="chart-column-households-annual_income_distribution" data-stat-type="scaled-percentage" data-chart-title="Annual household income"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#household_goods" id="household_goods">Household goods <i class="fa fa-link"></i></a></h2>
-            <div class="column-full" id="chart-column-households-household_goods" data-stat-type="scaled-percentage" data-chart-title="Goods available by household"></div>
         </section>
     </div>
 </article>
@@ -291,190 +299,8 @@
             </div>
             <div class="column-third" id="chart-pie-service_delivery-toilet_facilities_distribution" data-stat-type="percentage" data-chart-title="Population by toilet facilities"></div>
         </section>
-
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#refuse" id="refuse">Refuse disposal <i class="fa fa-link"></i></a></h2>
-            <aside>
-            </aside>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=service_delivery.percentage_ref_disp_from_service_provider stat_type='percentage' %}
-            </div>
-            <div class="column-third" id="chart-pie-service_delivery-refuse_disposal_distribution" data-chart-title="Population by refuse disposal" data-stat-type="percentage"></div>
-        </section>
-
     </div>
 </article>
-
-<article id="economics" class="clearfix">
-    <header class="section-contents">
-        <h1>Economics</h1>
-    </header>
-    <div class="section-container">
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#employment" id="employment">Employment <i class="fa fa-link"></i></a></h2>
-            <aside>
-            </aside>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=economics.employment_status.Employed stat_type='percentage' %}
-            </div>
-            <div class="column-third" id="chart-pie-economics-employment_status" data-chart-title="Population by employment status" data-stat-type="percentage" data-initial-sort="-value" data-qualifier="Universe: {{ economics.employment_status.metadata.universe }}"></div>
-            <div class="column-third" id="chart-pie-economics-sector_type_distribution" data-chart-title="Sector of employment" data-stat-type="percentage" data-initial-sort="-value" data-qualifier="Universe: {{ economics.sector_type_distribution.metadata.universe }}"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#income" id="income">Monthly income <i class="fa fa-link"></i></a></h2>
-            <aside>
-                Average monthly income is a median estimate, be careful with this value.
-            </aside>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=economics.median_individual_income stat_type='dollar' %}
-            </div>
-            <div class="column-three-quarters" id="chart-histogram-economics-individual_income_distribution" data-chart-title="Employees by monthly income" data-stat-type="scaled-percentage" data-qualifier="Universe: {{ economics.individual_income_distribution.metadata.universe }}"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#internet" id="internet">Internet access <i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=economics.internet_access stat_type='percentage' %}
-            </div>
-            <div class="column-third" id="chart-pie-economics-internet_access_distribution" data-chart-title="Primary means of internet access" data-stat-type="scaled-percentage" data-initial-sort="-value"></div>
-        </section>
-    </div>
-</article>
-
-<article id="education" class="clearfix">
-    <header class="section-contents">
-        <h1>Education</h1>
-    </header>
-    <div class="section-container">
-
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#highest-educational-level" id="highest-educational-level">Educational level <i class="fa fa-link"></i></a></h2>
-            <aside>
-            </aside>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=education.educational_attainment.percent_get_or_higher stat_type='percentage' %}
-            </div>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=education.educational_attainment.percent_fet_or_higher stat_type='percentage' %}
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <div class="column-full" id="chart-histogram-education-educational_attainment_distribution" data-stat-type="scaled-percentage" data-chart-title="Population by highest educational level" data-qualifier="Universe: {{ education.educational_attainment_distribution.metadata.universe }}"></div>
-        </section>
-
-    </div>
-</article>
-
-<article id="children" class="clearfix">
-    <header class="section-contents">
-        <h1>Children</h1>
-    </header>
-    <div class="section-container">
-
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#child_pop_count" id="child_pop_count">Child population <i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=children.demographics.total_children stat_type='number' %}
-            </div>
-            <div class="column-third">
-                <div id="chart-pie-children-demographics-gender_distribution" data-stat-type="percentage" data-chart-title="Children under 18 by gender" data-qualifier="Universe: {{ children.demographics.gender_distribution.metadata.universe }}"></div>
-            </div>
-            <div class="column-third">
-                <div id="chart-pie-children-demographics-child_adult_distribution" data-stat-type="percentage" data-chart-title="Population by age category"></div>
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#parents" id="parents">Parents <i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=children.demographics.percent_no_parent stat_type='percentage' %}
-            </div>
-            <div class="column-third">
-                <div id="chart-pie-children-demographics-parental_survival_distribution" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Children 14 and under by biological parental survival" data-qualifier="Universe: {{ children.demographics.parental_survival_distribution.metadata.universe }}"></div>
-            </div>
-        </section>
-        {% if crime %}
-        <section class="clearfix stat-row">
-            <aside>
-                Crime information is only currently available at national and provincial levels.
-            </aside>
-            <h2 class="header-for-columns"><a class="permalink" href="#crimes_children" id="crimes_children">Crimes against children <i class="fa fa-link"></i></a></h2>
-            <div class="column-full">
-                {% include 'profile/_blocks/_stat_list.html' with stat=crime.crime_against_children stat_type='number' %}
-            </div>
-        </section>
-        {% endif %}
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#child_school" id="child_school">School attendance <i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=children.school.percent_school_attendance stat_type='percentage' %}
-            </div>
-            <div class="column-third">
-                <div id="chart-pie-children-school-school_attendance_distribution" data-stat-type="percentage" data-chart-title="Children 5 to 17 by school attendance" data-initial-sort="-value" data-qualifier="Universe: {{ children.school.school_attendance_distribution.metadata.universe }}"></div>
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <div class="column-full">
-                <div id="chart-column-children-school-education17_distribution" data-stat-type="scaled-percentage" data-chart-title="17-year-olds by highest educational level" data-qualifier="Universe: {{ children.school.education17_distribution.metadata.universe }}"></div>
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#child_employment" id="child_employment">Employment of 15- to 17-year-olds <i class="fa fa-link"></i></a></h2>
-            <aside>
-                Average monthly income is a median estimate, be careful with this value.
-            </aside>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=children.employment.median_income stat_type='dollar' %}
-            </div>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=children.employment.percent_in_labour_force stat_type='percentage' %}
-            </div>
-            <div class="column-third">
-                <div id="chart-pie-children-employment-employment_distribution" data-stat-type="percentage" data-chart-title="15- to 17-year olds by employment status" data-initial-sort="-value" data-qualifier="Universe: {{ children.employment.employment_distribution.metadata.universe }}"></div>
-            </div>
-        </section>
-
-    </div>
-</article>
-
-<article id="child_headed_households" class="clearfix">
-    <header class="section-contents">
-        <h1>Child-headed households</h1>
-    </header>
-    <div class="section-container">
-
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#child-households" id="child-households">Households headed by children under 18 years old<i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=child_households.total_households stat_type='number' %}
-            </div>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=child_households.informal stat_type='percentage' %}
-            </div>
-            <div class="column-third" id="chart-pie-child_households-type_of_dwelling_distribution" data-stat-type="percentage" data-chart-title="Child-headed households by type of dwelling" data-initial-sort="-value" data-qualifier="Universe: {{ child_households.type_of_dwelling_distribution.metadata.universe }}"></div>
-        </section>
-        <section class="clearfix stat-row grouped-row">
-            <h2><a class="permalink" href="#child-household-head" id="child-household-head">Head of household <i class="fa fa-link"></i></a></h2>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=child_households.head_of_household.female stat_type='percentage' %}
-            </div>
-            <div class="column-third" id="chart-pie-child_households-head_of_household-gender_distribution" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Head of child-headed household by gender" data-initial-sort="-value" data-qualifier="Universe: {{ child_households.head_of_household.gender_distribution.metadata.universe }}"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#child-household-income" id="child-household-income">Annual household income <i class="fa fa-link"></i></a></h2>
-            <aside>
-                Average annual household income is a median estimate, be careful with this value.
-            </aside>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=child_households.median_annual_income stat_type='dollar' %}
-            </div>
-            <div class="column-three-quarters" id="chart-column-child_households-annual_income_distribution" data-stat-type="scaled-percentage" data-chart-title="Annual child-headed household income" data-qualifier="Universe: {{ child_households.annual_income_distribution.metadata.universe }}"></div>
-        </section>
-        <section class="clearfix stat-row">
-            <h2><a class="permalink" href="#child-household-size" id="child-household-size">Household size <i class="fa fa-link"></i></a></h2>
-            <div class="column-full" id="chart-grouped_column-child_households-household_size_distribution" data-stat-type="scaled-percentage" data-chart-title="Size of household by age of household head"></div>
-        </section>
-    </div>
-</article>
-
 {% endblock %}
 
 {% block body_javascript_extra %}{{ block.super }}
@@ -664,6 +490,7 @@ var makeCharts = function() {
             chartChartShowYAxis = $(this).data('chart-show-y-axis'),
             chartInitialSort = $(this).data('initial-sort'),
             chartStatType = $(this).data('stat-type'),
+            chartDecimalPlaces = $(this).data('decimal-places'),
             chartQualifier = $(this).data('qualifier') || null,
             geographyData = profileData['geography'];
 
@@ -694,6 +521,7 @@ var makeCharts = function() {
             chartChartTitle: chartChartTitle,
             chartInitialSort: chartInitialSort,
             chartStatType: chartStatType,
+            chartDecimalPlaces: chartDecimalPlaces,
             geographyData: geographyData
         }
         try {

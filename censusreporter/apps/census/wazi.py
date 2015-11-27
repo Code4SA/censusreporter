@@ -16,7 +16,7 @@ from .utils import LazyEncoder
 from .profile import enhance_api_data
 
 from api.models.tables import get_datatable, DATA_TABLES
-from api.controller import get_census_profile, get_geography, get_locations, get_locations_from_coords, get_elections_profile
+from api.controller import get_ecd_profile, get_geography, get_locations, get_locations_from_coords
 from api.utils import LocationNotFound
 from api.download import generate_download_bundle, supported_formats
 
@@ -44,14 +44,12 @@ class GeographyDetailView(BaseGeographyDetailView):
 
         try:
             geo_level, geo_code = geography_id.split('-', 1)
-            
+
             geo = get_geography(geo_code, geo_level)
         except (ValueError, LocationNotFound):
             raise Http404
 
-        profile_data = get_census_profile(geo_code, geo_level)
-        profile_data['elections'] = get_elections_profile(geo_code, geo_level)
-        profile_data['election_list'] = ["national_2014", "provincial_2014"]
+        profile_data = get_ecd_profile(geo_code, geo_level)
         profile_data['geography'] = geo.as_dict_deep()
 
         profile_data = enhance_api_data(profile_data)
@@ -135,7 +133,7 @@ class LocateView(BaseLocateView):
 
 
 class DataAPIView(View):
-    """ 
+    """
     View that provides an API for census table information, mimicking that
     of the Censusreporter API described at https://github.com/censusreporter/census-api#get-10datashowacs
 
@@ -227,7 +225,7 @@ class DataAPIView(View):
 
         return data_geos, info_geos
 
-    
+
     def get_data(self, geos, tables):
         data = {}
 
@@ -240,7 +238,7 @@ class DataAPIView(View):
 
 
 class TableAPIView(View):
-    """ 
+    """
     View that lists data tables.
     """
 

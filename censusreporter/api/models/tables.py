@@ -169,7 +169,7 @@ class FieldTable(SimpleTable):
         ZA        male    < 18        80
         ZA        male    > 18        20
 
-    What are called +columns+ here are actually an abstraction used by the 
+    What are called +columns+ here are actually an abstraction used by the
     data API. They are nested combinations of field values, such as:
 
         col0: total
@@ -407,7 +407,6 @@ def get_model_from_fields(fields, geo_level, table_name=None):
 
     # try find it based on fields
     field_set = set(fields)
-
     possibilities = [(t, len(t.field_set - field_set))
         for t in FIELD_TABLES.itervalues() if len(t.field_set) >= len(field_set) and len(field_set - t.field_set) == 0]
     table, _ = min(possibilities, key=lambda p: p[1])
@@ -439,7 +438,7 @@ def build_model_from_fields(fields, geo_level, table_name=None):
                      for field in fields]
 
     # foreign keys
-    field_columns.append(Column('%s_code' % geo_level, String(5),
+    field_columns.append(Column('%s_code' % geo_level, String(8),
                                 ForeignKey('%s.code' % geo_level),
                                 primary_key=True, index=True))
 
@@ -496,6 +495,7 @@ FieldTable(['energy or fuel for lighting'])
 FieldTable(['gender'])
 FieldTable(['gender', 'marital status'])
 FieldTable(['gender', 'population group'])
+FieldTable(['gender', 'age groups in 5 years'])
 FieldTable(['highest educational level'])
 FieldTable(['highest educational level 20 and older'], universe='Individuals 20 and older')
 FieldTable(['language'], description='Population by primary language spoken at home')
@@ -542,6 +542,10 @@ FieldTable(['party'], universe='Votes', id='party_votes_national_2014', descript
 FieldTable(['party'], universe='Votes', id='party_votes_provincial_2014', description='2014 Provincial Election results',
         dataset='2014 Provincial Elections', year='2014')
 
+# ECD
+FieldTable(['age groups in 5 years'], id='womenagegroupsin5years15to44', universe='Women 15 to 44', description='Women of child bearing age', year='2011')
+FieldTable(['gender'], id='genderunder9', universe='Children under 9', year='2011')
+
 # Simple Tables
 SimpleTable(
         id='population',
@@ -581,5 +585,29 @@ SimpleTable(
         total_column='total_votes',
         description='2014 National Election votes',
         dataset='2014 National Elections',
+        year='2014'
+        )
+SimpleTable(
+        id='hospitals_2012',
+        universe='Number of hospitals',
+        total_column=None,
+        description='2012 number of hospitals',
+        dataset='2012 National Hospital Survey',
+        year='2012'
+        )
+SimpleTable(
+        id='schools_2015',
+        universe='Number of schools',
+        total_column=None,
+        description='2015 number of schools',
+        dataset='Q1 2015 National Ordinary Schools Master List',
+        year='2015'
+        )
+SimpleTable(
+        id='ecd_centres_2014',
+        universe='Number of ECD Centres',
+        total_column=None,
+        description='2014 number of ECD centres',
+        dataset='Audit of ECD Centres - National Report',
         year='2014'
         )
