@@ -70,6 +70,7 @@ class SimpleTable(object):
 
         if table == 'auto':
             table = get_table_model(id)
+            table.data_table = self
 
         self.table = table
         self.universe = universe
@@ -223,7 +224,7 @@ class FieldTable(SimpleTable):
             model = build_model_from_fields(
                     self.fields, level,
                     table_name=get_table_name(id=self.id, geo_level=level))
-            model.field_table = self
+            model.data_table = self
             self.models[level] = model
 
 

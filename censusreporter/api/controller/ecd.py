@@ -13,8 +13,10 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 
 PROFILE_SECTIONS = (
-    'demographics',
-    "services",
+    "demographics",
+    "hospitals",
+    "schools",
+    "ecd_centres",
     "households",
     "service_delivery"
 )
@@ -176,11 +178,83 @@ def get_demographics_profile(geo_code, geo_level, session):
     return final_data
 
 
-def get_services_profile(geo_code, geo_level, session):
+def get_schools_profile(geo_code, geo_level, session):
     # population group
     _, total_pop = get_stat_data(
             ['population group'], geo_level, geo_code, session)
 
+    # Schools
+    table = get_datatable('schools_2015').table
+
+    schools = session\
+        .query(table.c.total_schools,
+               table.c.primary_schools,
+               table.c.combined_schools,
+               table.c.intermediate_schools,
+               table.c.secondary_schools) \
+        .filter(table.c.geo_level == geo_level) \
+        .filter(table.c.geo_code == geo_code) \
+        .first() or [0.0, 0.0, 0.0, 0.0, 0.0]
+
+    total_schools, primary_schools, combined_schools, \
+    intermediate_schools, secondary_schools = (i or 0.0 for i in schools)
+
+    school_breakdown = OrderedDict((
+        ("primary_schools", {
+            "name": "Primary schools",
+            "values": {"this": primary_schools or 0.0}
+        }),
+        ("combined_schools", {
+            "name": "Combined schools",
+            "values": {"this": combined_schools or 0.0}
+        }),
+        ("intermediate_schools", {
+            "name": "Intermediate schools",
+            "values": {"this": intermediate_schools or 0.0}
+        }),
+        ("secondary_schools", {
+            "name": "Secondary schools",
+            "values": {"this": secondary_schools or 0.0}
+        }),
+    ))
+    add_metadata(school_breakdown, table)
+
+    primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
+    secondary_school_ages = ['14', '15', '16', '17', '18']
+
+    _, total_primary_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=primary_school_ages)
+
+    _, total_secondary_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=secondary_school_ages)
+
+    children_per_primary_school = ratio(total_primary_children, primary_schools)
+    children_per_secondary_school = ratio(total_secondary_children, secondary_schools)
+
+    final_data = {
+        'total_schools': {
+            "name": "Schools",
+            "values": {"this": total_schools}
+        },
+        "school_breakdown": school_breakdown,
+        "children_per_primary_school": {
+            "name": "Children (6-13 years) in the region for each primary school",
+            "values": {"this": children_per_primary_school}
+        },
+        "children_per_secondary_school": {
+            "name": "Children (14-18 years) for each secondary school",
+            "values": {"this": children_per_secondary_school}
+        }
+    }
+
+    return final_data
+
+
+def get_ecd_centres_profile(geo_code, geo_level, session):
     # ECD Centres
     ecd_age_groups, total_ecd = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
@@ -239,6 +313,35 @@ def get_services_profile(geo_code, geo_level, session):
             "numerators": {"this": ecd_other}
         }),
     ))
+    add_metadata(ecd_centre_breakdown, table)
+
+    final_data = {
+        "total_ecd_centres": {
+            "name": "ECD centres",
+            "values": {"this": total_ecd_centres}
+        },
+        "children_per_ecd_centre": {
+            "name": "Children (0-5 years) in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_5_per_centre}
+        },
+        "ecd_centre_breakdown": ecd_centre_breakdown,
+        "children_0_to_2_per_ecd_centre": {
+            "name": "Children (0-2 years) in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_2_per_centre}
+        },
+        "children_3_to_5_per_ecd_centre": {
+            "name": "Children (3-5 years) in the region for each ECD Centre",
+            "values": {"this": ecd_3_to_5_per_centre}
+        },
+    }
+
+    return final_data
+
+
+def get_hospitals_profile(geo_code, geo_level, session):
+    # population group
+    _, total_pop = get_stat_data(
+            ['population group'], geo_level, geo_code, session)
 
     # Hospitals
     table = get_datatable('hospitals_2012').table
@@ -284,81 +387,11 @@ def get_services_profile(geo_code, geo_level, session):
             "values": {"this": chcs or 0.0}
         }),
     ))
+    add_metadata(hospital_breakdown, table)
 
-    # TODO: Add meta data
     people_per_hospital = ratio(total_pop, total_hospitals)
 
-    # Schools
-    table = get_datatable('schools_2015').table
-
-    schools = session\
-        .query(table.c.total_schools,
-               table.c.primary_schools,
-               table.c.combined_schools,
-               table.c.intermediate_schools,
-               table.c.secondary_schools) \
-        .filter(table.c.geo_level == geo_level) \
-        .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0, 0.0, 0.0, 0.0, 0.0]
-
-    total_schools, primary_schools, combined_schools, \
-    intermediate_schools, secondary_schools = (i or 0.0 for i in schools)
-
-    school_breakdown = OrderedDict((
-        ("primary_schools", {
-            "name": "Primary schools",
-            "values": {"this": primary_schools or 0.0}
-        }),
-        ("combined_schools", {
-            "name": "Combined schools",
-            "values": {"this": combined_schools or 0.0}
-        }),
-        ("intermediate_schools", {
-            "name": "Intermediate schools",
-            "values": {"this": intermediate_schools or 0.0}
-        }),
-        ("secondary_schools", {
-            "name": "Secondary schools",
-            "values": {"this": secondary_schools or 0.0}
-        }),
-    ))
-
-    primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
-    secondary_school_ages = ['14', '15', '16', '17', '18']
-
-    _, total_primary_children = get_stat_data(
-        ['age in completed years'], geo_level, geo_code, session,
-        table_name='ageincompletedyears_%s' % geo_level,
-        only=primary_school_ages)
-
-    _, total_secondary_children = get_stat_data(
-        ['age in completed years'], geo_level, geo_code, session,
-        table_name='ageincompletedyears_%s' % geo_level,
-        only=secondary_school_ages)
-
-    # TODO: Add meta data
-
-    children_per_primary_school = ratio(total_primary_children, primary_schools)
-    children_per_secondary_school = ratio(total_secondary_children, secondary_schools)
-
     final_data = {
-        "total_ecd_centres": {
-            "name": "ECD centres",
-            "values": {"this": total_ecd_centres}
-        },
-        "children_per_ecd_centre": {
-            "name": "Children (0-5 years) in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_5_per_centre}
-        },
-        "ecd_centre_breakdown": ecd_centre_breakdown,
-        "children_0_to_2_per_ecd_centre": {
-            "name": "Children (0-2 years) in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_2_per_centre}
-        },
-        "children_3_to_5_per_ecd_centre": {
-            "name": "Children (3-5 years) in the region for each ECD Centre",
-            "values": {"this": ecd_3_to_5_per_centre}
-        },
         "total_hospitals": {
             "name": "Hospitals / Clinics",
             "values": {"this": total_hospitals}
@@ -368,21 +401,7 @@ def get_services_profile(geo_code, geo_level, session):
             "name": "People in the region for each hospital / clinic",
             "values": {"this": people_per_hospital}
         },
-        'total_schools': {
-            "name": "Schools",
-            "values": {"this": total_schools}
-        },
-        "school_breakdown": school_breakdown,
-        "children_per_primary_school": {
-            "name": "Children (6-13 years) in the region for each primary school",
-            "values": {"this": children_per_primary_school}
-        },
-        "children_per_secondary_school": {
-            "name": "Children (14-18 years) for each secondary school",
-            "values": {"this": children_per_secondary_school}
-        }
     }
-
     return final_data
 
 
