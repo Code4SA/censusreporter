@@ -274,26 +274,29 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_centres = session. \
         query(table.c.reg_full,
               table.c.reg_conditional,
-              table.c.reg_not_registered). \
+              table.c.reg_not_registered,
+              table.c.reg_in_process,
+              table.c.reg_unspecified). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
-        first() or [0.0, 0.0, 0.0]
+        first() or [0.0, 0.0, 0.0, 0.0, 0.0]
 
-    ecd_registered, ecd_conditional, ecd_unregistered = (i or 0.0 for i in ecd_centres)
+    ecd_registered, ecd_conditional, ecd_unregistered, ecd_in_process, ecd_unspecified = (i or 0.0 for i in ecd_centres)
 
     if total_ecd_centres:
         total_ecd_centres = float(total_ecd_centres[0])
         ecd_0_to_5_per_centre = ratio(total_ecd, total_ecd_centres)
         ecd_0_to_2_per_centre = ratio(ecd_age_groups['0-2']['values']['this'], total_ecd_centres)
         ecd_3_to_5_per_centre = ratio(ecd_age_groups['3-5']['values']['this'], total_ecd_centres)
-        ecd_other = total_ecd_centres - sum([ecd_registered, ecd_conditional, ecd_unregistered])
+        ecd_incomplete = total_ecd_centres - sum([
+            ecd_registered, ecd_conditional, ecd_unregistered, ecd_in_process, ecd_unspecified])
     else:
         total_ecd_centres = ecd_0_to_5_per_centre = \
         ecd_0_to_2_per_centre = ecd_3_to_5_per_centre = ecd_other = 0
 
     ecd_centre_breakdown = OrderedDict((
         ("registered", {
-            "name": "Registered centres",
+            "name": "Registered",
             "values": {"this": percent(ecd_registered, total_ecd_centres)},
             "numerators": {"this": ecd_registered},
         }),
@@ -303,16 +306,27 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "numerators": {"this": ecd_conditional},
         }),
         ("unregistered", {
-            "name": "Unregistered centres",
+            "name": "Unregistered",
             "values": {"this": percent(ecd_unregistered, total_ecd_centres)},
             "numerators": {"this": ecd_unregistered},
         }),
-        ("other", {
-            "name": "Other",
-            "values": {"this": percent(ecd_other, total_ecd_centres)},
-            "numerators": {"this": ecd_other}
+        ("in_process", {
+            "name": "Registration in process",
+            "values": {"this": percent(ecd_in_process, total_ecd_centres)},
+            "numerators": {"this": ecd_in_process},
+        }),
+        ("incomplete", {
+            "name": "Registration incomplete",
+            "values": {"this": percent(ecd_incomplete, total_ecd_centres)},
+            "numerators": {"this": ecd_incomplete}
+        }),
+        ("unspecified", {
+            "name": "Unspecified",
+            "values": {"this": percent(ecd_unspecified, total_ecd_centres)},
+            "numerators": {"this": ecd_unspecified},
         }),
     ))
+
     add_metadata(ecd_centre_breakdown, table)
 
     final_data = {
