@@ -583,7 +583,7 @@ SimpleTable(
 SimpleTable(
         id='hospitals_2012',
         universe='Number of hospitals',
-        total_column='total_hospitals',
+        total_column=None,
         description='2012 number of hospitals',
         dataset='2012 National Hospital Survey',
         year='2012'
@@ -591,7 +591,7 @@ SimpleTable(
 SimpleTable(
         id='schools_2015',
         universe='Number of schools',
-        total_column='total_schools',
+        total_column=None,
         description='2015 number of schools',
         dataset='Q1 2015 National Ordinary Schools Master List',
         year='2015'
@@ -599,7 +599,7 @@ SimpleTable(
 SimpleTable(
         id='ecd_centres_2014',
         universe='Number of ECD Centres',
-        total_column='total_ecd_centres',
+        total_column=None,
         description='2014 number of ECD centres',
         dataset='Audit of ECD Centres - National Report',
         year='2014'
