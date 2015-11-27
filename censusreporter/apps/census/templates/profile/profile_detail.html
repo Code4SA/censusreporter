@@ -181,26 +181,6 @@
 
 <article class="clearfix">
     <header class="section-contents">
-        <h1>Hospitals</h1>
-    </header>
-    <div class="section-container">
-        <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#hospitals" id="hospitals">Hospitals / Clinics<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.total_hospitals stat_type='number' %}
-            </div>
-            <div class="column-half">
-                <div id="chart-histogram-hospitals-hospital_breakdown" data-chart-title="Type of medical centre" data-decimal-places="2"></div>
-            </div>
-            <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.people_per_hospital stat_type='number' %}
-            </div>
-        </section>
-    </div>
-</article>
-
-<article class="clearfix">
-    <header class="section-contents">
         <h1>Schools</h1>
     </header>
     <div class="section-container">
@@ -219,6 +199,26 @@
             </div>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=schools.children_per_secondary_school stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>Hospitals</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#hospitals" id="hospitals">Hospitals / Clinics<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.total_hospitals stat_type='number' %}
+            </div>
+            <div class="column-half">
+                <div id="chart-histogram-hospitals-hospital_breakdown" data-chart-title="Type of medical centre" data-decimal-places="2"></div>
+            </div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.people_per_hospital stat_type='number' %}
             </div>
         </section>
     </div>
