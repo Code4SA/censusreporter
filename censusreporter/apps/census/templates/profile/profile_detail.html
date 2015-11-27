@@ -160,20 +160,20 @@
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=services.total_ecd_centres stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.total_ecd_centres stat_type='number' %}
             </div>
-            <div class="column-two-thirds" id="chart-pie-services-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
+            <div class="column-two-thirds" id="chart-pie-ecd_centres-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
 
         </section>
         <section class="clearfix stat-row grouped-row">
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_per_ecd_centre stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_per_ecd_centre stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_0_to_2_per_ecd_centre stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_0_to_2_per_ecd_centre stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=services.children_3_to_5_per_ecd_centre stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_per_ecd_centre stat_type='number' %}
             </div>
         </section>
     </div>

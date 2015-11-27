@@ -13,8 +13,9 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 
 
 PROFILE_SECTIONS = (
-    'demographics',
+    "demographics",
     "services",
+    "ecd_centres",
     "households",
     "service_delivery"
 )
@@ -181,65 +182,6 @@ def get_services_profile(geo_code, geo_level, session):
     _, total_pop = get_stat_data(
             ['population group'], geo_level, geo_code, session)
 
-    # ECD Centres
-    ecd_age_groups, total_ecd = get_stat_data(
-        ['age in completed years'], geo_level, geo_code, session,
-        table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5'],
-        recode=ECD_AGE_CATEGORIES,
-        percent=False)
-
-    table = get_datatable('ecd_centres_2014').table
-
-    total_ecd_centres = session. \
-        query(table.c.total_ecd_centres). \
-        filter(table.c.geo_level == geo_level). \
-        filter(table.c.geo_code == geo_code). \
-        first() or 0
-
-    ecd_centres = session. \
-        query(table.c.reg_full,
-              table.c.reg_conditional,
-              table.c.reg_not_registered). \
-        filter(table.c.geo_level == geo_level). \
-        filter(table.c.geo_code == geo_code). \
-        first() or [0.0, 0.0, 0.0]
-
-    ecd_registered, ecd_conditional, ecd_unregistered = (i or 0.0 for i in ecd_centres)
-
-    if total_ecd_centres:
-        total_ecd_centres = float(total_ecd_centres[0])
-        ecd_0_to_5_per_centre = ratio(total_ecd, total_ecd_centres)
-        ecd_0_to_2_per_centre = ratio(ecd_age_groups['0-2']['values']['this'], total_ecd_centres)
-        ecd_3_to_5_per_centre = ratio(ecd_age_groups['3-5']['values']['this'], total_ecd_centres)
-        ecd_other = total_ecd_centres - sum([ecd_registered, ecd_conditional, ecd_unregistered])
-    else:
-        total_ecd_centres = ecd_0_to_5_per_centre = \
-        ecd_0_to_2_per_centre = ecd_3_to_5_per_centre = ecd_other = 0
-
-    ecd_centre_breakdown = OrderedDict((
-        ("registered", {
-            "name": "Registered centres",
-            "values": {"this": percent(ecd_registered, total_ecd_centres)},
-            "numerators": {"this": ecd_registered},
-        }),
-        ("conditional", {
-            "name": "Conditionally registered",
-            "values": {"this": percent(ecd_conditional, total_ecd_centres)},
-            "numerators": {"this": ecd_conditional},
-        }),
-        ("unregistered", {
-            "name": "Unregistered centres",
-            "values": {"this": percent(ecd_unregistered, total_ecd_centres)},
-            "numerators": {"this": ecd_unregistered},
-        }),
-        ("other", {
-            "name": "Other",
-            "values": {"this": percent(ecd_other, total_ecd_centres)},
-            "numerators": {"this": ecd_other}
-        }),
-    ))
-
     # Hospitals
     table = get_datatable('hospitals_2012').table
     total_hospitals = session\
@@ -342,23 +284,6 @@ def get_services_profile(geo_code, geo_level, session):
     children_per_secondary_school = ratio(total_secondary_children, secondary_schools)
 
     final_data = {
-        "total_ecd_centres": {
-            "name": "ECD centres",
-            "values": {"this": total_ecd_centres}
-        },
-        "children_per_ecd_centre": {
-            "name": "Children (0-5 years) in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_5_per_centre}
-        },
-        "ecd_centre_breakdown": ecd_centre_breakdown,
-        "children_0_to_2_per_ecd_centre": {
-            "name": "Children (0-2 years) in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_2_per_centre}
-        },
-        "children_3_to_5_per_ecd_centre": {
-            "name": "Children (3-5 years) in the region for each ECD Centre",
-            "values": {"this": ecd_3_to_5_per_centre}
-        },
         "total_hospitals": {
             "name": "Hospitals / Clinics",
             "values": {"this": total_hospitals}
@@ -381,6 +306,89 @@ def get_services_profile(geo_code, geo_level, session):
             "name": "Children (14-18 years) for each secondary school",
             "values": {"this": children_per_secondary_school}
         }
+    }
+
+    return final_data
+
+
+def get_ecd_centres_profile(geo_code, geo_level, session):
+    # ECD Centres
+    ecd_age_groups, total_ecd = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=['0', '1', '2', '3', '4', '5'],
+        recode=ECD_AGE_CATEGORIES,
+        percent=False)
+
+    table = get_datatable('ecd_centres_2014').table
+
+    total_ecd_centres = session. \
+        query(table.c.total_ecd_centres). \
+        filter(table.c.geo_level == geo_level). \
+        filter(table.c.geo_code == geo_code). \
+        first() or 0
+
+    ecd_centres = session. \
+        query(table.c.reg_full,
+              table.c.reg_conditional,
+              table.c.reg_not_registered). \
+        filter(table.c.geo_level == geo_level). \
+        filter(table.c.geo_code == geo_code). \
+        first() or [0.0, 0.0, 0.0]
+
+    ecd_registered, ecd_conditional, ecd_unregistered = (i or 0.0 for i in ecd_centres)
+
+    if total_ecd_centres:
+        total_ecd_centres = float(total_ecd_centres[0])
+        ecd_0_to_5_per_centre = ratio(total_ecd, total_ecd_centres)
+        ecd_0_to_2_per_centre = ratio(ecd_age_groups['0-2']['values']['this'], total_ecd_centres)
+        ecd_3_to_5_per_centre = ratio(ecd_age_groups['3-5']['values']['this'], total_ecd_centres)
+        ecd_other = total_ecd_centres - sum([ecd_registered, ecd_conditional, ecd_unregistered])
+    else:
+        total_ecd_centres = ecd_0_to_5_per_centre = \
+        ecd_0_to_2_per_centre = ecd_3_to_5_per_centre = ecd_other = 0
+
+    ecd_centre_breakdown = OrderedDict((
+        ("registered", {
+            "name": "Registered centres",
+            "values": {"this": percent(ecd_registered, total_ecd_centres)},
+            "numerators": {"this": ecd_registered},
+        }),
+        ("conditional", {
+            "name": "Conditionally registered",
+            "values": {"this": percent(ecd_conditional, total_ecd_centres)},
+            "numerators": {"this": ecd_conditional},
+        }),
+        ("unregistered", {
+            "name": "Unregistered centres",
+            "values": {"this": percent(ecd_unregistered, total_ecd_centres)},
+            "numerators": {"this": ecd_unregistered},
+        }),
+        ("other", {
+            "name": "Other",
+            "values": {"this": percent(ecd_other, total_ecd_centres)},
+            "numerators": {"this": ecd_other}
+        }),
+    ))
+
+    final_data = {
+        "total_ecd_centres": {
+            "name": "ECD centres",
+            "values": {"this": total_ecd_centres}
+        },
+        "children_per_ecd_centre": {
+            "name": "Children (0-5 years) in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_5_per_centre}
+        },
+        "ecd_centre_breakdown": ecd_centre_breakdown,
+        "children_0_to_2_per_ecd_centre": {
+            "name": "Children (0-2 years) in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_2_per_centre}
+        },
+        "children_3_to_5_per_ecd_centre": {
+            "name": "Children (3-5 years) in the region for each ECD Centre",
+            "values": {"this": ecd_3_to_5_per_centre}
+        },
     }
 
     return final_data
