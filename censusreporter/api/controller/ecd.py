@@ -113,7 +113,7 @@ def get_demographics_profile(geo_code, geo_level, session):
     pop_dist_data, total_pop = get_stat_data(
             ['population group'], geo_level, geo_code, session)
 
-    ecd_age_groups, total_ecd = get_stat_data(
+    ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
         only=['0', '1', '2', '3', '4', '5', '6', '7', '8'],
@@ -135,9 +135,9 @@ def get_demographics_profile(geo_code, geo_level, session):
             "values": {"this": total_pop}
         },
         'ecd_age_groups': ecd_age_groups,
-        'total_ecd': {
+        'ecd_children': {
             "name": "Children under the age of 9 years",
-            "values": {"this": total_ecd}
+            "values": {"this": ecd_children}
         },
         'ecd_gender': ecd_gender,
         'women_child_bearing_age': women_child_bearing_age,
@@ -155,7 +155,7 @@ def get_demographics_profile(geo_code, geo_level, session):
         }
         final_data['child_population_density'] = {
             'name': 'Children (0-9 years) per square kilometre',
-            'values': {"this": total_ecd / geo.square_kms}
+            'values': {"this": ecd_children / geo.square_kms}
         }
 
         ecd_pop_density = OrderedDict()
@@ -194,7 +194,7 @@ def get_schools_profile(geo_code, geo_level, session):
                table.c.secondary_schools) \
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0, 0.0, 0.0, 0.0, 0.0]
+        .first() or [0.0 for i in xrange(5)]
 
     total_schools, primary_schools, combined_schools, \
     intermediate_schools, secondary_schools = (i or 0.0 for i in schools)
@@ -256,20 +256,17 @@ def get_schools_profile(geo_code, geo_level, session):
 
 def get_ecd_centres_profile(geo_code, geo_level, session):
     # ECD Centres
-    ecd_age_groups, total_ecd = get_stat_data(
+    ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
         only=['0', '1', '2', '3', '4', '5'],
         recode=ECD_AGE_CATEGORIES,
         percent=False)
 
-    table = get_datatable('ecd_centres_2014').table
+    ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
+    ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
 
-    # ecd_total = session. \
-    #     query(table.c.ecd_total). \
-    #     filter(table.c.geo_level == geo_level). \
-    #     filter(table.c.geo_code == geo_code). \
-    #     first() or 0
+    table = get_datatable('ecd_centres_2014').table
 
     ecd_centres = session. \
         query(table.c.total_ecd_centres,
@@ -281,21 +278,21 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
               table.c.total_learners_accomodated). \
         filter(table.c.geo_level == geo_level). \
         filter(table.c.geo_code == geo_code). \
-        first() or [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        first() or [0.0 for i in xrange(7)]
 
     ecd_total, ecd_registered, ecd_conditional, ecd_unregistered, ecd_in_process, \
-    ecd_unspecified, ecd_learners = (float(i) or 0.0 for i in ecd_centres)
+    ecd_unspecified, ecd_learners = (i or 0.0 for i in ecd_centres)
 
     if ecd_total:
-        # ecd_total = float(ecd_total[0])
-        ecd_0_to_5_per_centre = ratio(total_ecd, ecd_total)
-        ecd_0_to_2_per_centre = ratio(ecd_age_groups['0-2']['values']['this'], ecd_total)
-        ecd_3_to_5_per_centre = ratio(ecd_age_groups['3-5']['values']['this'], ecd_total)
+        ecd_total = float(ecd_total)
+        ecd_0_to_5 = ratio(ecd_children, ecd_total)
+        ecd_0_to_2 = ratio(ecd_children_0_to_2, ecd_total)
+        ecd_3_to_5 = ratio(ecd_children_3_to_5, ecd_total)
         ecd_incomplete = ecd_total - sum([
             ecd_registered, ecd_conditional, ecd_unregistered,
             ecd_in_process, ecd_unspecified])
     else:
-        ecd_0_to_5_per_centre = ecd_0_to_2_per_centre = ecd_3_to_5_per_centre = 0.0
+        ecd_0_to_5 = ecd_0_to_2 = ecd_3_to_5 = ecd_incomplete = 0.0
 
     ecd_centre_breakdown = OrderedDict((
         ("registered", {
@@ -337,22 +334,22 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "name": "ECD centres",
             "values": {"this": ecd_total}
         },
-        "children_per_ecd_centre": {
-            "name": "Children (0-5 years) in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_5_per_centre}
-        },
         "ecd_centre_breakdown": ecd_centre_breakdown,
         "ecd_learners": {
             "name": "Learners accomodated in ECD centres in the region",
             "values": {"this": ecd_learners}
         },
+        "children_per_ecd_centre": {
+            "name": "Children (0-5 years) living in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_5}
+        },
         "children_0_to_2_per_ecd_centre": {
-            "name": "Children (0-2 years) in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_2_per_centre}
+            "name": "Children (0-2 years) living in the region for each ECD Centre",
+            "values": {"this": ecd_0_to_2}
         },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Children (3-5 years) in the region for each ECD Centre",
-            "values": {"this": ecd_3_to_5_per_centre}
+            "name": "Children (3-5 years) living in the region for each ECD Centre",
+            "values": {"this": ecd_3_to_5}
         },
     }
 
@@ -381,7 +378,7 @@ def get_hospitals_profile(geo_code, geo_level, session):
                table.c.chc) \
         .filter(table.c.geo_level == geo_level) \
         .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        .first() or [0.0 for i in xrange(6)]
 
     total_hospitals, regional_hospitals, central_hospitals, \
     district_hospitals, clinics, chcs = (i or 0.0 for i in hospitals )
@@ -419,7 +416,7 @@ def get_hospitals_profile(geo_code, geo_level, session):
         },
         "hospital_breakdown": hospital_breakdown,
         "people_per_hospital": {
-            "name": "People in the region for each hospital / clinic",
+            "name": "People living in the region for each hospital / clinic",
             "values": {"this": people_per_hospital}
         },
     }
