@@ -15,7 +15,6 @@ from .utils import (collapse_categories, calculate_median, calculate_median_stat
 PROFILE_SECTIONS = (
     "demographics",
     "depravation"
-
 )
 
 def get_youth_profile(geo_code, geo_level):
@@ -104,7 +103,7 @@ def get_depravation_profile(geo_code, geo_level, session):
             "values": {"this": float(youth_prop) or 0.0},
             },
         'edu_dep': {
-            "name": "Deprived in educational attainment",
+            "name": "Deprived in educational attainment *",
             "values": {"this": float(edu_dep) or 0.0},
             },
         'disab_dep': {
@@ -112,15 +111,15 @@ def get_depravation_profile(geo_code, geo_level, session):
             "values": {"this": float(disab_dep) or 0.0},
             },
         'light_dep': {
-            "name": "Living in households without use of electricity, gas or solar energy for light",
+            "name": "Living in households without energy for light *",
             "values": {"this": float(light_dep) or 0.0},
             },
         'heat_dep': {
-            "name": "Living in households without use of electricity, gas or solar energy for heat",
+            "name": "Living in households without energy for heat *",
             "values": {"this": float(heat_dep) or 0.0},
             },
         'cook_dep': {
-            "name": "Living in households without use of electricity, gas or solar energy for cooking",
+            "name": "Living in households without energy for cooking *",
             "values": {"this": float(cook_dep) or 0.0},
             },
         'toilet_dep': {

@@ -130,6 +130,9 @@
             </div>
         </section>
         <section class="clearfix stat-row">
+            <aside>
+                <p>* Deprived if individual is: age 15 - 16 and has completed less than primary school; age 17 - 20 and has completed less than grade 9; or age 21 - 24 and has completed less than matric or matric equivalent</p>
+            </aside>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.edu_dep stat_type='percentage' %}
             </div>
@@ -139,6 +142,9 @@
         </section>
         <section class="clearfix stat-row">
         <h2 class="header-for-columns"><a class="permalink" href="#services" id="services">Service delivery<i class="fa fa-link"></i></a></h2>
+            <aside>
+                <p>* Electricity, gas or solar energy</p>
+            </aside>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.light_dep stat_type='percentage' %}
             </div>
@@ -165,6 +171,9 @@
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.asset_dep stat_type='percentage' %}
             </div>
+        </section>
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#household_employment" id="household_employment">Household employment<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.emp_dep stat_type='percentage' %}
             </div>
