@@ -121,15 +121,61 @@
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#youth" id="youth">Youth<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#population" id="population">Population<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.youth_pop stat_type='number' %}
             </div>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.youth_prop stat_type='percentage' %}
             </div>
+        </section>
+        <section class="clearfix stat-row">
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=depravation.edu_dep stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.disab_dep stat_type='percentage' %}
+            </div>
+        </section>
+        <section class="clearfix stat-row">
+        <h2 class="header-for-columns"><a class="permalink" href="#services" id="services">Service delivery<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.light_dep stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.heat_dep stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.cook_dep stat_type='percentage' %}
+            </div>
+        </section>
+        <section class="clearfix stat-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.toilet_dep stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.water_dep stat_type='percentage' %}
+            </div>
+        </section>
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#households" id="households">Households<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.dwell_dep stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.asset_dep stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.emp_dep stat_type='percentage' %}
+            </div>
+        </section>
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#indices" id="indices">Poverty indices<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.prop_multid_poor stat_type='percentage' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=depravation.youth_mpi stat_type='number' %}
             </div>
         </section>
     </div>
