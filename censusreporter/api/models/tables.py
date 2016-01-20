@@ -169,7 +169,7 @@ class FieldTable(SimpleTable):
         ZA        male    < 18        80
         ZA        male    > 18        20
 
-    What are called +columns+ here are actually an abstraction used by the 
+    What are called +columns+ here are actually an abstraction used by the
     data API. They are nested combinations of field values, such as:
 
         col0: total
@@ -582,4 +582,12 @@ SimpleTable(
         description='2014 National Election votes',
         dataset='2014 National Elections',
         year='2014'
+        )
+SimpleTable(
+        id='youth',
+        universe='Youth',
+        total_column=None,
+        description='Youth statistics',
+        dataset='Census 2011',
+        year='2011'
         )
