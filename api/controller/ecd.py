@@ -240,7 +240,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     table = get_datatable('ecd_centres_2014')
     ecd_centres, total_ecd = table.get_stat_data(
-        geo_level, geo_code, percent=True,
+        geo_level, geo_code, percent=True, total='total_ecd_centres',
         recode={'reg_full': 'Registered',
                 'reg_conditional': 'Conditionally registered',
                 'reg_not_registered': 'Unregistered',
@@ -296,54 +296,15 @@ def get_hospitals_profile(geo_code, geo_level, session):
         ['population group'], geo_level, geo_code, session)
 
     # Hospitals
-    table = get_datatable('hospitals_2012').model
-    total_hospitals = session\
-            .query(table.c.total_hospitals,) \
-            .filter(table.c.geo_level == geo_level) \
-            .filter(table.c.geo_code == geo_code) \
-            .first() or 0.0
-
-    hospitals = session\
-        .query(table.c.total_hospitals,
-               table.c.regional_hospital,
-               table.c.central_hospital,
-               table.c.district_hospital,
-               table.c.clinic,
-               table.c.chc) \
-        .filter(table.c.geo_level == geo_level) \
-        .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0 for i in xrange(6)]
-
-    total_hospitals, regional_hospitals, central_hospitals, \
-    district_hospitals, clinics, chcs = (i or 0.0 for i in hospitals )
-
-    hospital_breakdown = OrderedDict((
-        ("regional_hospitals", {
-            "name": "Regional Hospitals",
-            "values": {"this": regional_hospitals or 0.0}
-        }),
-        ("central_hospitals", {
-            "name": "Central Hospitals",
-            "values": {"this": central_hospitals or 0.0}
-        }),
-        ("district_hospitals", {
-            "name": "District hospitals",
-            "values": {"this": district_hospitals or 0.0}
-        }),
-        ("clinics", {
-            "name": "Clinics",
-            "values": {"this": clinics or 0.0}
-        }),
-        ("chcs", {
-            "name": "Community health centres",
-            "values": {"this": chcs or 0.0}
-        }),
-    ))
-    add_metadata(hospital_breakdown, table)
+    table = get_datatable('hospitals_2012')
+    keys = ['regional_hospital', 'central_hospital', 'district_hospital', 'clinic', 'chc']
+    hospital_breakdown, total_hospitals = table.get_stat_data(
+        geo_level, geo_code, keys, percent=False, key_order=keys,
+        recode={'chc': 'Community health centre'})
 
     people_per_hospital = ratio(total_pop, total_hospitals)
 
-    final_data = {
+    return {
         "total_hospitals": {
             "name": "Hospitals / Clinics",
             "values": {"this": total_hospitals}
@@ -354,7 +315,6 @@ def get_hospitals_profile(geo_code, geo_level, session):
             "values": {"this": people_per_hospital}
         },
     }
-    return final_data
 
 
 def get_households_profile(geo_code, geo_level, session):
