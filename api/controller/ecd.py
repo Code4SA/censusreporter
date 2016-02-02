@@ -184,7 +184,7 @@ def get_schools_profile(geo_code, geo_level, session):
             ['population group'], geo_level, geo_code, session)
 
     # Schools
-    table = get_datatable('schools_2015').table
+    table = get_datatable('schools_2015').model
 
     schools = session\
         .query(table.c.total_schools,
@@ -266,7 +266,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
     ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
 
-    table = get_datatable('ecd_centres_2014').table
+    table = get_datatable('ecd_centres_2014').model
 
     ecd_centres = session. \
         query(table.c.total_ecd_centres,
@@ -362,7 +362,7 @@ def get_hospitals_profile(geo_code, geo_level, session):
             ['population group'], geo_level, geo_code, session)
 
     # Hospitals
-    table = get_datatable('hospitals_2012').table
+    table = get_datatable('hospitals_2012').model
     total_hospitals = session\
             .query(table.c.total_hospitals,) \
             .filter(table.c.geo_level == geo_level) \
