@@ -236,79 +236,45 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
     ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
 
-    table = get_datatable('ecd_centres_2014').model
+    keys = ['reg_full', 'reg_conditional', 'reg_not_registered', 'reg_in_process', 'reg_unspecified']
 
-    ecd_centres = session. \
-        query(table.c.total_ecd_centres,
-              table.c.reg_full,
-              table.c.reg_conditional,
-              table.c.reg_not_registered,
-              table.c.reg_in_process,
-              table.c.reg_unspecified,
-              table.c.total_learners_accomodated). \
-        filter(table.c.geo_level == geo_level). \
-        filter(table.c.geo_code == geo_code). \
-        first() or [0.0 for i in xrange(7)]
+    table = get_datatable('ecd_centres_2014')
+    ecd_centres, total_ecd = table.get_stat_data(
+        geo_level, geo_code, percent=True,
+        recode={'reg_full': 'Registered',
+                'reg_conditional': 'Conditionally registered',
+                'reg_not_registered': 'Unregistered',
+                'reg_in_process': 'Registration in process',
+                'reg_unspecified': 'Unspecified'},
+        key_order=keys)
 
-    ecd_total, ecd_registered, ecd_conditional, ecd_unregistered, ecd_in_process, \
-    ecd_unspecified, ecd_learners = (i or 0.0 for i in ecd_centres)
+    # incomplete is everything else
+    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in keys)
+    ecd_centres['reg_incomplete'] = {
+        "name": "Registration incomplete",
+        "values": {"this": percent(ecd_incomplete, total_ecd)},
+        "numerators": {"this": ecd_incomplete}
+    }
 
-    if ecd_total:
-        ecd_total = float(ecd_total)
-        ecd_0_to_5 = ratio(ecd_children, ecd_total)
-        ecd_0_to_2 = ratio(ecd_children_0_to_2, ecd_total)
-        ecd_3_to_5 = ratio(ecd_children_3_to_5, ecd_total)
-        ecd_incomplete = ecd_total - sum([
-            ecd_registered, ecd_conditional, ecd_unregistered,
-            ecd_in_process, ecd_unspecified])
+    ecd_learners, _ = table.get_stat_data(
+        geo_level, geo_code, 'total_learners_accomodated', percent=False,
+        recode={'total_learners_accomodated': 'Learners accomodated in ECD centres in the region'})
+
+    if total_ecd:
+        total_ecd = float(total_ecd)
+        ecd_0_to_5 = ratio(ecd_children, total_ecd)
+        ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
+        ecd_3_to_5 = ratio(ecd_children_3_to_5, total_ecd)
     else:
-        ecd_0_to_5 = ecd_0_to_2 = ecd_3_to_5 = ecd_incomplete = 0.0
+        ecd_0_to_5 = ecd_0_to_2 = ecd_3_to_5 = 0.0
 
-    ecd_centre_breakdown = OrderedDict((
-        ("registered", {
-            "name": "Registered",
-            "values": {"this": percent(ecd_registered, ecd_total)},
-            "numerators": {"this": ecd_registered},
-        }),
-        ("conditional", {
-            "name": "Conditionally registered",
-            "values": {"this": percent(ecd_conditional, ecd_total)},
-            "numerators": {"this": ecd_conditional},
-        }),
-        ("unregistered", {
-            "name": "Unregistered",
-            "values": {"this": percent(ecd_unregistered, ecd_total)},
-            "numerators": {"this": ecd_unregistered},
-        }),
-        ("in_process", {
-            "name": "Registration in process",
-            "values": {"this": percent(ecd_in_process, ecd_total)},
-            "numerators": {"this": ecd_in_process},
-        }),
-        ("incomplete", {
-            "name": "Registration incomplete",
-            "values": {"this": percent(ecd_incomplete, ecd_total)},
-            "numerators": {"this": ecd_incomplete}
-        }),
-        ("unspecified", {
-            "name": "Unspecified",
-            "values": {"this": percent(ecd_unspecified, ecd_total)},
-            "numerators": {"this": ecd_unspecified},
-        }),
-    ))
-
-    add_metadata(ecd_centre_breakdown, table)
-
-    final_data = {
+    return {
         "total_ecd_centres": {
             "name": "ECD centres",
-            "values": {"this": ecd_total}
+            "values": {"this": total_ecd}
         },
-        "ecd_centre_breakdown": ecd_centre_breakdown,
-        "ecd_learners": {
-            "name": "Learners accomodated in ECD centres in the region",
-            "values": {"this": ecd_learners}
-        },
+        "ecd_centre_breakdown": ecd_centres,
+        "ecd_learners": ecd_learners,
         "children_per_ecd_centre": {
             "name": "Children (0-5 years) living in the region for each ECD Centre",
             "values": {"this": ecd_0_to_5}
@@ -323,13 +289,11 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         },
     }
 
-    return final_data
-
 
 def get_hospitals_profile(geo_code, geo_level, session):
     # population group
     _, total_pop = get_stat_data(
-            ['population group'], geo_level, geo_code, session)
+        ['population group'], geo_level, geo_code, session)
 
     # Hospitals
     table = get_datatable('hospitals_2012').model
