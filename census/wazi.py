@@ -1,11 +1,9 @@
 import requests
-import os
 from itertools import chain
 
 import logging
 logger = logging.getLogger('censusreporter')
 
-from django.conf import settings
 from django.utils.safestring import SafeString
 from django.utils import simplejson
 from django.http import HttpResponse, Http404, HttpResponseBadRequest
@@ -34,8 +32,8 @@ def render_json_error(message, status_code=400):
 class GeographyDetailView(BaseGeographyDetailView):
     def dispatch(self, *args, **kwargs):
         self.geo_id = self.kwargs.get('geography_id', None)
-        return super(GeographyDetailView, self).dispatch(*args, **kwargs)
-
+        # Skip the parent class's logic completely and go back to basics
+        return TemplateView.dispatch(self, *args, **kwargs)
 
     def get_context_data(self, *args, **kwargs):
         geography_id = self.geo_id
@@ -59,6 +57,9 @@ class GeographyDetailView(BaseGeographyDetailView):
         page_context.update({
             'profile_data_json': profile_data_json
         })
+
+        # is this a head-to-head view?
+        page_context['head2head'] = 'h2h' in self.request.GET
 
         return page_context
 
@@ -170,12 +171,12 @@ class DataAPIView(View):
             'tables': dict((t.id.upper(), t.as_dict()) for t in self.tables),
             'data': data,
             'geography': dict((g.full_geoid, g.as_dict()) for g in chain(self.data_geos, self.info_geos)),
-            })
+        })
 
     def download(self, request):
         fmt = request.GET.get('format', 'csv')
-        if not fmt in supported_formats:
-            response = HttpResponse('Unspported format %s. Supported formats: %s' %(fmt, ', '.join(supported_formats.keys())))
+        if fmt not in supported_formats:
+            response = HttpResponse('Unspported format %s. Supported formats: %s' % (fmt, ', '.join(supported_formats.keys())))
             response.status_code = 400
             return response
 
@@ -200,7 +201,7 @@ class DataAPIView(View):
         for geo_id in geo_ids:
             # either country-KE or level|country-KE, which indicates
             # we must break country-KE into +levels+
-            if not '-' in geo_id:
+            if '-' not in geo_id:
                 raise LocationNotFound('Invalid geo id: %s' % geo_id)
 
             level, code = geo_id.split('-', 1)
@@ -212,7 +213,7 @@ class DataAPIView(View):
                 info_geos.append(geo)
                 try:
                     data_geos.extend(geo.split_into(split_level))
-                except ValueError as e:
+                except ValueError:
                     raise LocationNotFound('Invalid geo level: %s' % split_level)
 
             else:
@@ -220,7 +221,6 @@ class DataAPIView(View):
                 data_geos.append(get_geography(code, level))
 
         return data_geos, info_geos
-
 
     def get_data(self, geos, tables):
         data = {}
@@ -230,7 +230,6 @@ class DataAPIView(View):
                 data.setdefault(geo_id, {})[table.id.upper()] = table_data
 
         return data
-
 
 
 class TableAPIView(View):
@@ -244,3 +243,24 @@ class TableAPIView(View):
 
 class AboutView(TemplateView):
     template_name = 'about.html'
+
+
+class GeographyCompareView(TemplateView):
+    template_name = 'profile/head2head.html'
+
+    def get_context_data(self, geo_id1, geo_id2):
+        page_context = {
+            'geo_id1': geo_id1,
+            'geo_id2': geo_id2,
+        }
+
+        try:
+            level, code = geo_id1.split('-', 1)
+            page_context['geo1'] = get_geography(code, level)
+
+            level, code = geo_id2.split('-', 1)
+            page_context['geo2'] = get_geography(code, level)
+        except (ValueError, LocationNotFound):
+            raise Http404
+
+        return page_context

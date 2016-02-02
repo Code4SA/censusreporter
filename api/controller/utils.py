@@ -7,7 +7,6 @@ from sqlalchemy.orm import class_mapper
 from api.controller.geography import LocationNotFound
 from api.models import Ward, Municipality, District, Province
 from api.models import get_model_from_fields
-from api.models.tables import get_datatable
 from api.utils import capitalize
 
 
@@ -119,11 +118,11 @@ def get_summary_geo_info(geo_code=None, geo_level=None, session=None,
 
 def get_geo_object(geo_code, geo_level, session):
     model = {
-            'ward': Ward,
-            'district': District,
-            'municipality': Municipality,
-            'province': Province,
-            'country': None,
+        'ward': Ward,
+        'district': District,
+        'municipality': Municipality,
+        'province': Province,
+        'country': None,
     }[geo_level]
 
     if model is None:
@@ -183,8 +182,9 @@ def group_remainder(data, num_items=4, make_percentage=True,
                 values['values'] = dict((k, percent(v, total_all[k]))
                                         for k, v in values['numerators'].iteritems())
 
+
 def add_metadata(data, model):
-    if not 'metadata' in data:
+    if 'metadata' not in data:
         data['metadata'] = {}
 
     if hasattr(model, 'data_table'):
@@ -192,6 +192,8 @@ def add_metadata(data, model):
         data['metadata']['table_id'] = data_table.id.upper()
         if data_table.universe:
             data['metadata']['universe'] = data_table.universe
+        if data_table.year:
+            data['metadata']['year'] = data_table.year
 
 
 def get_objects_by_geo(db_model, geo_code, geo_level, session, fields=None, order_by=None):
@@ -199,18 +201,23 @@ def get_objects_by_geo(db_model, geo_code, geo_level, session, fields=None, orde
     geo_code and geo_level, summing over the 'total' field and grouping by
     +fields+.
     """
-    geo_attr = '%s_code' % geo_level
+    if db_model.field_table.table_per_level:
+        geo_attr = '%s_code' % geo_level
+    else:
+        geo_attr = 'geo_code'
 
     if fields is None:
-        fields = [c.key for c in class_mapper(db_model).attrs if c.key not in [geo_attr, 'total']]
+        fields = [c.key for c in class_mapper(db_model).attrs if c.key not in [geo_attr, 'geo_level', 'total']]
 
     fields = [getattr(db_model, f) for f in fields]
 
     objects = session\
-            .query(func.sum(db_model.total).label('total'),
-                   *fields)\
-            .group_by(*fields)\
-            .filter(getattr(db_model, geo_attr) == geo_code)
+        .query(func.sum(db_model.total).label('total'), *fields)\
+        .group_by(*fields)\
+        .filter(getattr(db_model, geo_attr) == geo_code)
+
+    if not db_model.field_table.table_per_level:
+        objects = objects.filter(db_model.geo_level == geo_level)
 
     if order_by is not None:
         attr = order_by
@@ -231,15 +238,15 @@ def get_objects_by_geo(db_model, geo_code, geo_level, session, fields=None, orde
 
     objects = objects.all()
     if len(objects) == 0:
-        raise LocationNotFound("%s.%s with code '%s' not found"
-                               % (db_model.__tablename__, geo_attr, geo_code))
+        raise LocationNotFound("%s for geography '%s-%s' not found"
+                               % (db_model.__table__.name, geo_level, geo_code))
     return objects
 
 
 def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
                   percent=True, total=None, table_fields=None,
                   table_name=None, only=None, exclude=None, exclude_zero=False,
-                  recode=None, key_order=None):
+                  recode=None, key_order=None, table_dataset=None):
     """
     This is our primary helper routine for building a dictionary suitable for
     a place's profile page, based on a statistic.
@@ -277,6 +284,7 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
     :param dict or list key_order: ordering for keys in result dictionary. If +fields+ has many items,
                                    this must be a dict from field names to orderings.
                                    The default ordering is determined by +order+.
+    :param str table_dataset: dataset used to help find the table if +table_name+ isn't given.
 
     :return: (data-dictionary, total)
     """
@@ -320,8 +328,7 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
         if not isinstance(recode, dict) or not many_fields:
             recode = dict((f, recode) for f in fields)
 
-
-    model = get_model_from_fields(table_fields or fields, geo_level, table_name)
+    model = get_model_from_fields(table_fields or fields, geo_level, table_name, table_dataset)
     objects = get_objects_by_geo(model, geo_code, geo_level, session, fields=fields, order_by=order_by)
 
     root_data = OrderedDict()
@@ -362,7 +369,7 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
             data = data[key]
 
             # default values for intermediate fields
-            if data is not None and i < n_fields-1:
+            if data is not None and i < n_fields - 1:
                 data['metadata'] = {'name': key}
 
         # data is now the dict where the end value is going to go
@@ -371,7 +378,6 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
             data['numerators'] = {'this': 0.0}
 
         return key, data
-
 
     # run the stats for the objects
     for obj in objects:
@@ -412,11 +418,12 @@ def get_stat_data(fields, geo_level, geo_code, session, order_by=None,
 
     return root_data, grand_total
 
+
 def percent(num, denom, places=2):
     if denom == 0:
-      return 0
+        return 0
     else:
-      return round(num / denom * 100, places)
+        return round(num / denom * 100, places)
 
 
 def ratio(num, denom, places=2):

@@ -11,7 +11,7 @@ from .views import (HomepageView, GeographySearchView,
     HealthcheckView, DataView, TopicView, ExampleView, Elasticsearch)
 
 from .wazi import (GeographyDetailView, GeographyJsonView, WardSearchProxy, PlaceSearchJson,
-        LocateView, DataAPIView, TableAPIView, AboutView)
+        LocateView, DataAPIView, TableAPIView, AboutView, GeographyCompareView)
 
 admin.autodiscover()
 
@@ -53,6 +53,14 @@ urlpatterns = patterns('',
         name    = 'geography_json',
     ),
 
+    # e.g. /compare/province-GT/vs/province-WC/
+    url(
+        regex   = '^compare/(?P<geo_id1>(%s)-[\w]+)/vs/(?P<geo_id2>(%s)-[\w]+)/$' % (geo_levels, geo_levels),
+        view    = cache_page(STANDARD_CACHE_TIME)(GeographyCompareView.as_view()),
+        kwargs  = {},
+        name    = 'geography_compare',
+    ),
+
     # Custom data api
     url(
         regex   = '^api/1.0/data/show/latest$',
@@ -86,19 +94,33 @@ urlpatterns = patterns('',
     #),
 
     # e.g. /table/B01001/
-    url(
-        regex   = '^tables/(?P<table>[a-zA-Z0-9]+)/$',
-        view    = cache_page(STANDARD_CACHE_TIME)(TableDetailView.as_view()),
-        kwargs  = {},
-        name    = 'table_detail',
-    ),
+    #url(
+    #    regex   = '^tables/B23002/$',
+    #    view    = RedirectView.as_view(url=reverse_lazy('table_detail',kwargs={'table':'B23002A'})),
+    #    kwargs  = {},
+    #    name    = 'redirect_B23002',
+    #),
 
-    url(
-        regex   = '^tables/$',
-        view    = cache_page(STANDARD_CACHE_TIME)(TableSearchView.as_view()),
-        kwargs  = {},
-        name    = 'table_search',
-    ),
+    #url(
+    #    regex   = '^tables/C23002/$',
+    #    view    = RedirectView.as_view(url=reverse_lazy('table_detail',kwargs={'table':'C23002A'})),
+    #    kwargs  = {},
+    #    name    = 'redirect_C23002',
+    #),
+
+    #url(
+    #    regex   = '^tables/(?P<table>[a-zA-Z0-9]+)/$',
+    #    view    = cache_page(STANDARD_CACHE_TIME)(TableDetailView.as_view()),
+    #    kwargs  = {},
+    #    name    = 'table_detail',
+    #),
+
+    #url(
+    #    regex   = '^tables/$',
+    #    view    = cache_page(STANDARD_CACHE_TIME)(TableSearchView.as_view()),
+    #    kwargs  = {},
+    #    name    = 'table_search',
+    #),
 
     url(
         regex   = '^data/$',
@@ -115,25 +137,25 @@ urlpatterns = patterns('',
         name    = 'data_detail',
     ),
 
-    url(
-        regex   = '^topics/$',
-        view    = cache_page(STANDARD_CACHE_TIME)(TopicView.as_view()),
-        kwargs  = {},
-        name    = 'topic_list',
-    ),
+    #url(
+    #    regex   = '^topics/$',
+    #    view    = cache_page(STANDARD_CACHE_TIME)(TopicView.as_view()),
+    #    kwargs  = {},
+    #    name    = 'topic_list',
+    #),
 
-    url(
-        regex   = '^topics/race-latino/?$',
-        view    = RedirectView.as_view(url=reverse_lazy('topic_detail', kwargs={'topic_slug': 'race-hispanic'})),
-        name    = 'topic_latino_redirect',
-    ),
+    #url(
+    #    regex   = '^topics/race-latino/?$',
+    #    view    = RedirectView.as_view(url=reverse_lazy('topic_detail', kwargs={'topic_slug': 'race-hispanic'})),
+    #    name    = 'topic_latino_redirect',
+    #),
 
-    url(
-        regex   = '^topics/(?P<topic_slug>[-\w]+)/$',
-        view    = cache_page(STANDARD_CACHE_TIME)(TopicView.as_view()),
-        kwargs  = {},
-        name    = 'topic_detail',
-    ),
+    #url(
+    #    regex   = '^topics/(?P<topic_slug>[-\w]+)/$',
+    #    view    = cache_page(STANDARD_CACHE_TIME)(TopicView.as_view()),
+    #    kwargs  = {},
+    #    name    = 'topic_detail',
+    #),
 
     url(
         regex   = '^examples/(?P<example_slug>[-\w]+)/$',
@@ -142,16 +164,16 @@ urlpatterns = patterns('',
         name    = 'example_detail',
     ),
 
-    url(
-        regex   = '^glossary/$',
-        view    = cache_page(STANDARD_CACHE_TIME)(TemplateView.as_view(template_name="glossary.html")),
-        kwargs  = {},
-        name    = 'glossary',
-    ),
+    #url(
+    #    regex   = '^glossary/$',
+    #    view    = cache_page(STANDARD_CACHE_TIME)(TemplateView.as_view(template_name="glossary.html")),
+    #    kwargs  = {},
+    #    name    = 'glossary',
+    #),
 
     url(
         regex   = '^locate/$',
-        view    = LocateView.as_view(),
+        view    = cache_page(STANDARD_CACHE_TIME)(LocateView.as_view(template_name="locate/locate.html")),
         kwargs  = {},
         name    = 'locate',
     ),

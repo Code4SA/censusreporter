@@ -2,9 +2,11 @@
 
 {% block head_title %}{{ geography.this.short_name }} - {{ block.super }}{% endblock %}
 
+{% block head_meta_description %}Population data and election figures from {{ geography.this.short_name}}, broken down by category: Demographics, Service delivery, Economics and Education.{% endblock %}
+
 {% block head_facebook_tags %}
-    <meta property="og:title" content="Wazi profile: {% firstof geography.this.full_name geography.this.short_name %}" />
-    <meta property="og:site_name" content="Wazi" />
+    <meta property="og:title" content="Wazimap profile: {% firstof geography.this.full_name geography.this.short_name %}" />
+    <meta property="og:site_name" content="Wazimap" />
     <meta property="og:url" content="http://wazimap.co.za/profiles/{{ geography.this.full_geoid }}/" />
     <meta property="og:description" content="Population data and election figures from {{ geography.this.short_name}}, broken down by category: Demographics, Service delivery, Economics and Education." />
     <meta property="og:type" content="article" />
@@ -100,6 +102,14 @@
 <h2>This applicaton is currently under active development.<br>
 Please provide any feedback you may have by using the Help &amp; Feedback button</h2>
 <br>
+
+<section class="clearfix" id="compare-place-picker">
+    <h2>Compare this place with another</h2>
+    <div class="typeahead-container">
+        <input name="place_select" id="compare-place-select" type="text" placeholder="Start typing a place name or address to compare with..." autocomplete="off">
+    </div>
+</section>
+
 <div id="share-this-page" style="text-align: right;">
     <!-- AddThis Button BEGIN -->
     <div class="addthis_toolbox addthis_default_style " style="margin:2px 0 10px 5px;float:right;width:175px;">
@@ -303,6 +313,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
 <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
 <script src="{% static 'js/vendor/leaflet.label.js' %}"></script>
 <script src="{% static 'js/charts.js' %}"></script>
+<script src="{% static 'js/head2head.js' %}"></script>
 <script type="text/javascript">
 
 var drawMaps = function() {
@@ -491,8 +502,8 @@ var makeCharts = function() {
         // allow arbitrary nesting in API data structure
         var drilldown = chartDataID.length - 1;
         if (drilldown >= 2) {
-            for (var i = 2; i <= drilldown; i++) {
-                chartData = chartData[chartDataID[i]]
+            for (var n = 2; n <= drilldown; n++) {
+                chartData = chartData[chartDataID[n]]
             }
         }
 
@@ -505,7 +516,7 @@ var makeCharts = function() {
         /*chartQualifier = (chartQualifier && noteRelease) ? Array(chartQualifier, noteRelease)
             .filter(function(n) { return n }).join('; ') : null;*/
 
-        Charts[i] = Chart({
+        var chartstuff = {
             chartContainer: chartID,
             chartDataKey: chartDataKey,
             chartType: chartType,
@@ -517,7 +528,13 @@ var makeCharts = function() {
             chartStatType: chartStatType,
             chartDecimalPlaces: chartDecimalPlaces,
             geographyData: geographyData
-        });
+        }
+        try {
+            Charts[i] = Chart(chartstuff);
+        } catch(e) {
+            console.log("Error making chart " + chartID)
+            console.log(chartstuff);
+        }
     });
 }
 drawMaps();

@@ -46,11 +46,6 @@ If you've upgraded XCode on OS X Mavericks, you may well see some compilation er
 
     >> ARCHFLAGS=-Wno-error=unused-command-line-argument-hard-error-in-future pip install -r requirements.txt
 
-With your development environment still active, make sure it has the path settings it will need:
-
-    >> add2virtualenv ./censusreporter
-    >> add2virtualenv ./censusreporter/apps
-
 And make sure your development environment knows the proper DJANGO_SETTINGS_MODULE by creating a `postactivate` script ...
 
     >> cdvirtualenv bin
@@ -113,7 +108,7 @@ This pattern&mdash;using a generator script to collect and shape data from multi
 
 TODO: adapt for wazimap.co.za
 
-The skeleton of the profile page you see on the Census Reporter website is created by <a href="https://github.com/censusreporter/censusreporter/blob/master/censusreporter/apps/census/templates/profile/profile.html">a Django template</a>. The map is filled in by one Javascript library: <a href="https://github.com/censusreporter/censusreporter/blob/master/censusreporter/apps/census/static/js/TileLayer.GeoJSON.js">`TileLayer.GeoJSON.js`</a>, and the charts filled in by another: <a href="https://github.com/censusreporter/censusreporter/blob/master/censusreporter/apps/census/static/js/charts.js">`charts.js`</a>.
+The skeleton of the profile page you see on the Census Reporter website is created by <a href="https://github.com/censusreporter/censusreporter/blob/master/censusreporter/apps/census/templates/profile/profile.html">a Django template</a>. The map is filled in by one Javascript library: <a href="https://github.com/censusreporter/censusreporter/blob/master/censusreporter/apps/census/static/js/tilelayer.js">`tilelayer.js`</a>, and the charts filled in by another: <a href="https://github.com/censusreporter/censusreporter/blob/master/censusreporter/apps/census/static/js/charts.js">`charts.js`</a>.
 
 ####Profile map
 
@@ -132,7 +127,7 @@ The `column-*` class isn't really important here; that's just a structural setti
 At the bottom of the profile page, we trigger all the charts at once. Profile data is assigned to a Javascript variable:
 
     profileData = {{ profile_data_json }};
-    
+
 And we grab all the chart placeholders with:
 
     chartContainers = $('[id^=chart-]')
@@ -198,7 +193,7 @@ Javascript comes into play so we can completely change chart types that won't re
         makeCharts();
     }, 50);
     $(window).resize(lazyRedrawCharts);
-    
+
 
 `gracefulType`: This function checks `window.browserWidth`, and if it's too narrow to reasonably display a column chart, flips it to a bar chart. This is called by each chart inside the `makeCharts()` function, which is triggered on page load as well as resize thanks to `lazyRedrawCharts`.
 
