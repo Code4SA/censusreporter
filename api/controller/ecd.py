@@ -184,40 +184,10 @@ def get_schools_profile(geo_code, geo_level, session):
             ['population group'], geo_level, geo_code, session)
 
     # Schools
-    table = get_datatable('schools_2015').model
-
-    schools = session\
-        .query(table.c.total_schools,
-               table.c.primary_schools,
-               table.c.combined_schools,
-               table.c.intermediate_schools,
-               table.c.secondary_schools) \
-        .filter(table.c.geo_level == geo_level) \
-        .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0 for i in xrange(5)]
-
-    total_schools, primary_schools, combined_schools, \
-    intermediate_schools, secondary_schools = (i or 0.0 for i in schools)
-
-    school_breakdown = OrderedDict((
-        ("primary_schools", {
-            "name": "Primary schools",
-            "values": {"this": primary_schools or 0.0}
-        }),
-        ("combined_schools", {
-            "name": "Combined schools",
-            "values": {"this": combined_schools or 0.0}
-        }),
-        ("intermediate_schools", {
-            "name": "Intermediate schools",
-            "values": {"this": intermediate_schools or 0.0}
-        }),
-        ("secondary_schools", {
-            "name": "Secondary schools",
-            "values": {"this": secondary_schools or 0.0}
-        }),
-    ))
-    add_metadata(school_breakdown, table)
+    table = get_datatable('schools_2015')
+    school_breakdown, total_schools = table.get_stat_data(
+        geo_level, geo_code, percent=False,
+        key_order=['primary_schools', 'combined_schools', 'intermediate_schools', 'secondary_schools'])
 
     primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
@@ -232,8 +202,8 @@ def get_schools_profile(geo_code, geo_level, session):
         table_name='ageincompletedyears_%s' % geo_level,
         only=secondary_school_ages)
 
-    children_per_primary_school = ratio(total_primary_children, primary_schools)
-    children_per_secondary_school = ratio(total_secondary_children, secondary_schools)
+    children_per_primary_school = ratio(total_primary_children, school_breakdown['primary_schools']['values']['this'])
+    children_per_secondary_school = ratio(total_secondary_children, school_breakdown['secondary_schools']['values']['this'])
 
     final_data = {
         'total_schools': {
