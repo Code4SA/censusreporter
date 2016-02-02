@@ -5,7 +5,7 @@ from collections import OrderedDict
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, func
 
 from .base import Base, geo_levels
-from api.utils import get_session, get_table_model, capitalize
+from api.utils import get_session, get_table_model, capitalize, percent as p, add_metadata
 
 
 '''
@@ -65,14 +65,14 @@ class SimpleTable(object):
     use a `FieldTable` below.
     """
 
-    def __init__(self, id, universe, description, table='auto', total_column='total',
+    def __init__(self, id, universe, description, model='auto', total_column='total',
                  year='2011', dataset='Census 2011'):
         self.id = id
 
-        if table == 'auto':
-            table = get_table_model(id)
+        if model == 'auto':
+            model = get_table_model(id)
 
-        self.table = table
+        self.model = model
         self.universe = universe
         self.description = description
         self.year = year
@@ -97,7 +97,7 @@ class SimpleTable(object):
         if self.total_column:
             indent = 1
 
-        for col in (c.name for c in self.table.columns if c.name not in ['geo_code', 'geo_level']):
+        for col in (c.name for c in self.model.columns if c.name not in ['geo_code', 'geo_level']):
             self.columns[col] = {
                 'name': capitalize(col.replace('_', ' ')),
                 'indent': 0 if col == self.total_column else indent
@@ -121,9 +121,9 @@ class SimpleTable(object):
             try:
                 geo_values = None
                 rows = session\
-                    .query(self.table)\
-                    .filter(self.table.c.geo_level == geo_level)\
-                    .filter(self.table.c.geo_code.in_(geo_codes))\
+                    .query(self.model)\
+                    .filter(self.model.c.geo_level == geo_level)\
+                    .filter(self.model.c.geo_code.in_(geo_codes))\
                     .all()
 
                 for row in rows:
@@ -137,6 +137,92 @@ class SimpleTable(object):
                 session.close()
 
         return data
+
+    def get_stat_data(self, geo_level, geo_code, fields=None, order_by=None,
+                      percent=True, total=None, recode=None):
+        """ Get a data dictionary for a place from this table.
+
+        This fetches the values for each column in this table and returns a data
+        dictionary for those values, with appropriate names and metadata.
+
+        :param str geo_level: the geographical level
+        :param str geo_code: the geographical code
+        :param str or list fields: the columns to fetch stats for. By default, all columns except
+                                   geo-related and the total column (if any) are used.
+        :param str order_by: how to order the columns in the dictonary. Either 'key' or '-key' to
+                             order alphabetically based on (possibly re-coded) key, or 'value' or '-value'
+                             to order by the value for that column. Defaults to 'key'.
+        :param bool percent: should we calculate percentages, or just include raw values?
+        :param int total: the total value to use for percentages, name of a
+                          field, or None to use the table's total column, or the sum of
+                          all fields if the table has no total column
+        :param dict recode: map from field names to strings to recode column names.
+
+        :return: (data-dictionary, total)
+        """
+
+        session = get_session()
+        try:
+            if fields is not None and not isinstance(fields, list):
+                fields = [fields]
+            if fields:
+                for f in fields:
+                    if f not in self.columns:
+                        raise ValueError('Invalid field/column for %s: %s' % (self.id, f))
+            else:
+                fields = self.columns.keys()
+
+            recode = recode or {}
+            if recode:
+                # change lambda to dicts
+                if not isinstance(recode, dict):
+                    recode = {f: recode(f) for f in fields}
+
+            if total is None:
+                total = self.total_column
+
+            # table columns to fetch
+            if total is None:
+                # get everything, since we need to sum up to get a total
+                cols = self.columns.keys()
+            else:
+                cols = [self.model.columns[c] for c in fields]
+                if isinstance(total, basestring) and total not in cols:
+                    cols.append(total)
+
+            # do the query
+            row = session\
+                .query(*cols)\
+                .filter(self.model.c.geo_level == geo_level,
+                        self.model.c.geo_code == geo_code)\
+                .first()
+            if not row:
+                raise ValueError("No data in %s for %s-%s" % (self.id, geo_level, geo_code))
+
+            if percent:
+                # what's our denominator?
+                if total is None:
+                    # sum of all columns
+                    total = sum(getattr(row, f) for f in fields)
+                elif isinstance(total, basestring):
+                    total = getattr(row, total)
+
+            # TODO: ordering
+            results = OrderedDict()
+            for field in fields:
+                results[field] = {'name': recode.get(field, self.columns[field]['name'])}
+                val = getattr(row, field)
+                add_metadata(results[field], self)
+
+                if percent:
+                    results[field]['values'] = {'this': p(val, total)}
+                    results[field]['numerators'] = {'this': val}
+                else:
+                    results[field]['values'] = {'this': val}
+
+            return results
+        finally:
+            session.close()
 
     def as_dict(self, columns=True):
         return {
@@ -209,7 +295,7 @@ class FieldTable(SimpleTable):
         self.denominator_key = denominator_key
         self.table_per_level = table_per_level
 
-        super(FieldTable, self).__init__(id=id, table=None, universe=universe, description=description, **kwargs)
+        super(FieldTable, self).__init__(id=id, model=None, universe=universe, description=description, **kwargs)
 
         FIELD_TABLE_FIELDS.update(self.fields)
         FIELD_TABLES[self.id] = self
@@ -223,11 +309,11 @@ class FieldTable(SimpleTable):
         if self.table_per_level:
             for level in DATASET_GEO_LEVELS[self.dataset_name]:
                 model = self._build_model_from_fields(self.fields, self._table_name(level), level)
-                model.field_table = self
+                model.data_table = self
                 self.models[level] = model
         else:
             self.model = self._build_model_from_fields(self.fields, self.id)
-            self.model.field_table = self
+            self.model.data_table = self
 
     def get_model(self, geo_level):
         if self.table_per_level:
