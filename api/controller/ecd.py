@@ -237,20 +237,21 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
     ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
 
-    keys = ['reg_full', 'reg_conditional', 'reg_not_registered', 'reg_in_process', 'reg_unspecified']
+    recode = OrderedDict([
+        ('reg_full', 'Registered'),
+        ('reg_conditional', 'Conditionally registered'),
+        ('reg_not_registered', 'Unregistered'),
+        ('reg_in_process', 'Registration in process'),
+        ('reg_unspecified', 'Unspecified')
+    ])
 
     table = get_datatable('ecd_centres_2014')
     ecd_centres, total_ecd = table.get_stat_data(
         geo_level, geo_code, percent=True, total='total_ecd_centres',
-        recode={'reg_full': 'Registered',
-                'reg_conditional': 'Conditionally registered',
-                'reg_not_registered': 'Unregistered',
-                'reg_in_process': 'Registration in process',
-                'reg_unspecified': 'Unspecified'},
-        key_order=keys)
+        recode=recode, key_order=recode.keys())
 
     # incomplete is everything else
-    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in keys)
+    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.iterkeys())
     ecd_centres['reg_incomplete'] = {
         "name": "Registration incomplete",
         "values": {"this": percent(ecd_incomplete, total_ecd)},
