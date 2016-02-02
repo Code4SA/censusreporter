@@ -1,15 +1,14 @@
 from collections import OrderedDict
 
 from api.models import get_model_from_fields
-from api.models.tables import get_datatable, get_table_id
-from api.utils import get_session, LocationNotFound
+from api.models.tables import get_datatable
+from api.utils import get_session
 
 from api.controller.geography import get_geography
 
 
-from .utils import (collapse_categories, calculate_median, calculate_median_stat,
-    get_summary_geo_info, merge_dicts, group_remainder, add_metadata, get_stat_data,
-    get_objects_by_geo, percent, ratio, create_debug_dump)
+from .utils import (get_summary_geo_info, merge_dicts, group_remainder, add_metadata, get_stat_data,
+                    get_objects_by_geo, percent, ratio)
 
 
 PROFILE_SECTIONS = (
@@ -76,6 +75,7 @@ COLLAPSED_TOILET_CATEGORIES = {
     "Not applicable": "N/A",
 }
 
+
 def get_ecd_profile(geo_code, geo_level):
     session = get_session()
 
@@ -108,10 +108,11 @@ def get_ecd_profile(geo_code, geo_level):
     finally:
         session.close()
 
+
 def get_demographics_profile(geo_code, geo_level, session):
     # population group
     pop_dist_data, total_pop = get_stat_data(
-            ['population group'], geo_level, geo_code, session)
+        ['population group'], geo_level, geo_code, session)
 
     ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
@@ -181,7 +182,7 @@ def get_demographics_profile(geo_code, geo_level, session):
 def get_schools_profile(geo_code, geo_level, session):
     # population group
     _, total_pop = get_stat_data(
-            ['population group'], geo_level, geo_code, session)
+        ['population group'], geo_level, geo_code, session)
 
     # Schools
     table = get_datatable('schools_2015')
@@ -321,8 +322,8 @@ def get_households_profile(geo_code, geo_level, session):
     # head of household
     # gender
     head_gender_dist, total_households = get_stat_data(
-            ['gender of household head'], geo_level, geo_code, session,
-            order_by='gender of household head')
+        ['gender of household head'], geo_level, geo_code, session,
+        order_by='gender of household head')
     female_heads = head_gender_dist['Female']['numerators']['this']
 
     # age
@@ -335,41 +336,43 @@ def get_households_profile(geo_code, geo_level, session):
 
     # type of dwelling
     type_of_dwelling_dist, _ = get_stat_data(
-            ['type of dwelling'], geo_level, geo_code, session,
-            recode=TYPE_OF_DWELLING_RECODE,
-            order_by='-total')
+        ['type of dwelling'], geo_level, geo_code, session,
+        recode=TYPE_OF_DWELLING_RECODE,
+        order_by='-total')
     informal = type_of_dwelling_dist['Shack']['numerators']['this']
 
-    return {'total_households': {
-                'name': 'Households',
-                'values': {'this': total_households},
-                },
-            'type_of_dwelling_distribution': type_of_dwelling_dist,
-            'informal': {
-                'name': 'Households that are informal dwellings (shacks)',
-                'values': {'this': percent(informal, total_households)},
-                'numerators': {'this': informal},
-                },
-            'head_of_household': {
-                'gender_distribution': head_gender_dist,
-                'female': {
-                    'name': 'Households with women as their head',
-                    'values': {'this': percent(female_heads, total_households)},
-                    'numerators': {'this': female_heads},
-                    },
-                'under_18': {
-                    'name': 'Households with heads under 18 years old',
-                    'values': {'this': total_under_18},
-                    }
-                },
-           }
+    return {
+        'total_households': {
+            'name': 'Households',
+            'values': {'this': total_households},
+        },
+        'type_of_dwelling_distribution': type_of_dwelling_dist,
+        'informal': {
+            'name': 'Households that are informal dwellings (shacks)',
+            'values': {'this': percent(informal, total_households)},
+            'numerators': {'this': informal},
+        },
+        'head_of_household': {
+            'gender_distribution': head_gender_dist,
+            'female': {
+                'name': 'Households with women as their head',
+                'values': {'this': percent(female_heads, total_households)},
+                'numerators': {'this': female_heads},
+            },
+            'under_18': {
+                'name': 'Households with heads under 18 years old',
+                'values': {'this': total_under_18},
+            }
+        },
+    }
+
 
 def get_service_delivery_profile(geo_code, geo_level, session):
     # water source
     water_src_data, total_wsrc = get_stat_data(
-            ['source of water'], geo_level, geo_code, session,
-            recode=SHORT_WATER_SOURCE_CATEGORIES,
-            order_by='-total')
+        ['source of water'], geo_level, geo_code, session,
+        recode=SHORT_WATER_SOURCE_CATEGORIES,
+        order_by='-total')
     if 'Service provider' in water_src_data:
         total_water_sp = water_src_data['Service provider']['numerators']['this']
     else:
@@ -422,10 +425,10 @@ def get_service_delivery_profile(geo_code, geo_level, session):
 
     # toilets
     toilet_data, total_toilet = get_stat_data(
-            ['toilet facilities'], geo_level, geo_code, session,
-            exclude_zero=True,
-            recode=COLLAPSED_TOILET_CATEGORIES,
-            order_by='-total')
+        ['toilet facilities'], geo_level, geo_code, session,
+        exclude_zero=True,
+        recode=COLLAPSED_TOILET_CATEGORIES,
+        order_by='-total')
 
     total_flush_toilet = 0.0
     total_no_toilet = 0.0
@@ -435,27 +438,28 @@ def get_service_delivery_profile(geo_code, geo_level, session):
         if key == 'None':
             total_no_toilet += data['numerators']['this']
 
-    return {'water_source_distribution': water_src_data,
-            'percentage_water_from_service_provider': {
-                "name": "Are getting water from a regional or local service provider",
-                "numerators": {"this": total_water_sp},
-                "values": {"this": percent(total_water_sp, total_wsrc)},
-            },
-            'percentage_electricity_access': {
-                "name": "Have electricity for at least one of cooking, heating or lighting",
-                "numerators": {"this": total_some_elec},
-                "values": {"this": percent(total_some_elec, total_elec)},
-            },
-            'electricity_access_distribution': elec_access_data,
-            'percentage_flush_toilet_access': {
-                "name": "Have access to flush or chemical toilets",
-                "numerators": {"this": total_flush_toilet},
-                "values": {"this": percent(total_flush_toilet, total_toilet)},
-            },
-            'percentage_no_toilet_access': {
-                "name": "Have no access to any toilets",
-                "numerators": {"this": total_no_toilet},
-                "values": {"this": percent(total_no_toilet, total_toilet)},
-            },
-            'toilet_facilities_distribution': toilet_data,
+    return {
+        'water_source_distribution': water_src_data,
+        'percentage_water_from_service_provider': {
+            "name": "Are getting water from a regional or local service provider",
+            "numerators": {"this": total_water_sp},
+            "values": {"this": percent(total_water_sp, total_wsrc)},
+        },
+        'percentage_electricity_access': {
+            "name": "Have electricity for at least one of cooking, heating or lighting",
+            "numerators": {"this": total_some_elec},
+            "values": {"this": percent(total_some_elec, total_elec)},
+        },
+        'electricity_access_distribution': elec_access_data,
+        'percentage_flush_toilet_access': {
+            "name": "Have access to flush or chemical toilets",
+            "numerators": {"this": total_flush_toilet},
+            "values": {"this": percent(total_flush_toilet, total_toilet)},
+        },
+        'percentage_no_toilet_access': {
+            "name": "Have no access to any toilets",
+            "numerators": {"this": total_no_toilet},
+            "values": {"this": percent(total_no_toilet, total_toilet)},
+        },
+        'toilet_facilities_distribution': toilet_data,
     }
