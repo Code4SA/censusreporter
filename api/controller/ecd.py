@@ -263,13 +263,9 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         geo_level, geo_code, 'total_learners_accomodated', percent=False,
         recode={'total_learners_accomodated': 'Learners accomodated in ECD centres in the region'})
 
-    if total_ecd:
-        total_ecd = float(total_ecd)
-        ecd_0_to_5 = ratio(ecd_children, total_ecd)
-        ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
-        ecd_3_to_5 = ratio(ecd_children_3_to_5, total_ecd)
-    else:
-        ecd_0_to_5 = ecd_0_to_2 = ecd_3_to_5 = 0.0
+    ecd_0_to_5 = ratio(ecd_children, total_ecd)
+    ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
+    ecd_3_to_5 = ratio(ecd_children_3_to_5, total_ecd)
 
     return {
         "total_ecd_centres": {
