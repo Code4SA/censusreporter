@@ -252,7 +252,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         recode=recode, key_order=recode.keys())
 
     # incomplete is everything else
-    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.iterkeys())
+    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
     ecd_centres['reg_incomplete'] = {
         "name": "Registration incomplete",
         "values": {"this": percent(ecd_incomplete, total_ecd)},
@@ -260,8 +260,8 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     }
 
     ecd_learners, _ = table.get_stat_data(
-        geo_level, geo_code, 'total_learners_accomodated', percent=False,
-        recode={'total_learners_accomodated': 'Learners accomodated in ECD centres in the region'})
+        geo_level, geo_code, 'total_learners_accomodated', percent=False)
+    ecd_learners['total_learners_accomodated']['name'] = 'Learners accomodated in ECD centres in the region'
 
     ecd_0_to_5 = ratio(ecd_children, total_ecd)
     ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
