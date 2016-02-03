@@ -186,9 +186,10 @@ def get_schools_profile(geo_code, geo_level, session):
 
     # Schools
     table = get_datatable('schools_2015')
+    keys = ['primary_schools', 'combined_schools', 'intermediate_schools', 'secondary_schools']
     school_breakdown, total_schools = table.get_stat_data(
-        geo_level, geo_code, percent=False,
-        key_order=['primary_schools', 'combined_schools', 'intermediate_schools', 'secondary_schools'])
+        geo_level, geo_code, keys, percent=False,
+        key_order=keys)
 
     primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
