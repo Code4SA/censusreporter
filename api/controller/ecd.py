@@ -1,15 +1,14 @@
 from collections import OrderedDict
 
 from api.models import get_model_from_fields
-from api.models.tables import get_datatable, get_table_id
-from api.utils import get_session, LocationNotFound
+from api.models.tables import get_datatable
+from api.utils import get_session
 
 from api.controller.geography import get_geography
 
 
-from .utils import (collapse_categories, calculate_median, calculate_median_stat,
-    get_summary_geo_info, merge_dicts, group_remainder, add_metadata, get_stat_data,
-    get_objects_by_geo, percent, ratio, create_debug_dump)
+from .utils import (get_summary_geo_info, merge_dicts, group_remainder, add_metadata, get_stat_data,
+                    get_objects_by_geo, percent, ratio)
 
 
 PROFILE_SECTIONS = (
@@ -76,6 +75,7 @@ COLLAPSED_TOILET_CATEGORIES = {
     "Not applicable": "N/A",
 }
 
+
 def get_ecd_profile(geo_code, geo_level):
     session = get_session()
 
@@ -108,10 +108,11 @@ def get_ecd_profile(geo_code, geo_level):
     finally:
         session.close()
 
+
 def get_demographics_profile(geo_code, geo_level, session):
     # population group
     pop_dist_data, total_pop = get_stat_data(
-            ['population group'], geo_level, geo_code, session)
+        ['population group'], geo_level, geo_code, session)
 
     ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
@@ -181,43 +182,13 @@ def get_demographics_profile(geo_code, geo_level, session):
 def get_schools_profile(geo_code, geo_level, session):
     # population group
     _, total_pop = get_stat_data(
-            ['population group'], geo_level, geo_code, session)
+        ['population group'], geo_level, geo_code, session)
 
     # Schools
-    table = get_datatable('schools_2015').table
-
-    schools = session\
-        .query(table.c.total_schools,
-               table.c.primary_schools,
-               table.c.combined_schools,
-               table.c.intermediate_schools,
-               table.c.secondary_schools) \
-        .filter(table.c.geo_level == geo_level) \
-        .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0 for i in xrange(5)]
-
-    total_schools, primary_schools, combined_schools, \
-    intermediate_schools, secondary_schools = (i or 0.0 for i in schools)
-
-    school_breakdown = OrderedDict((
-        ("primary_schools", {
-            "name": "Primary schools",
-            "values": {"this": primary_schools or 0.0}
-        }),
-        ("combined_schools", {
-            "name": "Combined schools",
-            "values": {"this": combined_schools or 0.0}
-        }),
-        ("intermediate_schools", {
-            "name": "Intermediate schools",
-            "values": {"this": intermediate_schools or 0.0}
-        }),
-        ("secondary_schools", {
-            "name": "Secondary schools",
-            "values": {"this": secondary_schools or 0.0}
-        }),
-    ))
-    add_metadata(school_breakdown, table)
+    table = get_datatable('schools_2015')
+    keys = ['primary_schools', 'combined_schools', 'intermediate_schools', 'secondary_schools']
+    school_breakdown, total_schools = table.get_stat_data(
+        geo_level, geo_code, keys, percent=False)
 
     primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
@@ -232,8 +203,8 @@ def get_schools_profile(geo_code, geo_level, session):
         table_name='ageincompletedyears_%s' % geo_level,
         only=secondary_school_ages)
 
-    children_per_primary_school = ratio(total_primary_children, primary_schools)
-    children_per_secondary_school = ratio(total_secondary_children, secondary_schools)
+    children_per_primary_school = ratio(total_primary_children, school_breakdown['primary_schools']['values']['this'])
+    children_per_secondary_school = ratio(total_secondary_children, school_breakdown['secondary_schools']['values']['this'])
 
     final_data = {
         'total_schools': {
@@ -266,79 +237,42 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
     ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
 
-    table = get_datatable('ecd_centres_2014').table
+    recode = OrderedDict([
+        ('reg_full', 'Registered'),
+        ('reg_conditional', 'Conditionally registered'),
+        ('reg_not_registered', 'Unregistered'),
+        ('reg_in_process', 'Registration in process'),
+        ('reg_unspecified', 'Unspecified')
+    ])
 
-    ecd_centres = session. \
-        query(table.c.total_ecd_centres,
-              table.c.reg_full,
-              table.c.reg_conditional,
-              table.c.reg_not_registered,
-              table.c.reg_in_process,
-              table.c.reg_unspecified,
-              table.c.total_learners_accomodated). \
-        filter(table.c.geo_level == geo_level). \
-        filter(table.c.geo_code == geo_code). \
-        first() or [0.0 for i in xrange(7)]
+    table = get_datatable('ecd_centres_2014')
+    ecd_centres, total_ecd = table.get_stat_data(
+        geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
+        recode=recode)
 
-    ecd_total, ecd_registered, ecd_conditional, ecd_unregistered, ecd_in_process, \
-    ecd_unspecified, ecd_learners = (i or 0.0 for i in ecd_centres)
+    # incomplete is everything else
+    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
+    ecd_centres['reg_incomplete'] = {
+        "name": "Registration incomplete",
+        "values": {"this": percent(ecd_incomplete, total_ecd)},
+        "numerators": {"this": ecd_incomplete}
+    }
 
-    if ecd_total:
-        ecd_total = float(ecd_total)
-        ecd_0_to_5 = ratio(ecd_children, ecd_total)
-        ecd_0_to_2 = ratio(ecd_children_0_to_2, ecd_total)
-        ecd_3_to_5 = ratio(ecd_children_3_to_5, ecd_total)
-        ecd_incomplete = ecd_total - sum([
-            ecd_registered, ecd_conditional, ecd_unregistered,
-            ecd_in_process, ecd_unspecified])
-    else:
-        ecd_0_to_5 = ecd_0_to_2 = ecd_3_to_5 = ecd_incomplete = 0.0
+    ecd_learners, _ = table.get_stat_data(
+        geo_level, geo_code, 'total_learners_accomodated', percent=False)
+    ecd_learners['total_learners_accomodated']['name'] = 'Learners accomodated in ECD centres in the region'
 
-    ecd_centre_breakdown = OrderedDict((
-        ("registered", {
-            "name": "Registered",
-            "values": {"this": percent(ecd_registered, ecd_total)},
-            "numerators": {"this": ecd_registered},
-        }),
-        ("conditional", {
-            "name": "Conditionally registered",
-            "values": {"this": percent(ecd_conditional, ecd_total)},
-            "numerators": {"this": ecd_conditional},
-        }),
-        ("unregistered", {
-            "name": "Unregistered",
-            "values": {"this": percent(ecd_unregistered, ecd_total)},
-            "numerators": {"this": ecd_unregistered},
-        }),
-        ("in_process", {
-            "name": "Registration in process",
-            "values": {"this": percent(ecd_in_process, ecd_total)},
-            "numerators": {"this": ecd_in_process},
-        }),
-        ("incomplete", {
-            "name": "Registration incomplete",
-            "values": {"this": percent(ecd_incomplete, ecd_total)},
-            "numerators": {"this": ecd_incomplete}
-        }),
-        ("unspecified", {
-            "name": "Unspecified",
-            "values": {"this": percent(ecd_unspecified, ecd_total)},
-            "numerators": {"this": ecd_unspecified},
-        }),
-    ))
+    ecd_0_to_5 = ratio(ecd_children, total_ecd)
+    ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
+    ecd_3_to_5 = ratio(ecd_children_3_to_5, total_ecd)
 
-    add_metadata(ecd_centre_breakdown, table)
-
-    final_data = {
+    return {
         "total_ecd_centres": {
             "name": "ECD centres",
-            "values": {"this": ecd_total}
+            "values": {"this": total_ecd}
         },
-        "ecd_centre_breakdown": ecd_centre_breakdown,
-        "ecd_learners": {
-            "name": "Learners accomodated in ECD centres in the region",
-            "values": {"this": ecd_learners}
-        },
+        "ecd_centre_breakdown": ecd_centres,
+        "ecd_learners": ecd_learners,
         "children_per_ecd_centre": {
             "name": "Children (0-5 years) living in the region for each ECD Centre",
             "values": {"this": ecd_0_to_5}
@@ -353,63 +287,22 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         },
     }
 
-    return final_data
-
 
 def get_hospitals_profile(geo_code, geo_level, session):
     # population group
     _, total_pop = get_stat_data(
-            ['population group'], geo_level, geo_code, session)
+        ['population group'], geo_level, geo_code, session)
 
     # Hospitals
-    table = get_datatable('hospitals_2012').table
-    total_hospitals = session\
-            .query(table.c.total_hospitals,) \
-            .filter(table.c.geo_level == geo_level) \
-            .filter(table.c.geo_code == geo_code) \
-            .first() or 0.0
-
-    hospitals = session\
-        .query(table.c.total_hospitals,
-               table.c.regional_hospital,
-               table.c.central_hospital,
-               table.c.district_hospital,
-               table.c.clinic,
-               table.c.chc) \
-        .filter(table.c.geo_level == geo_level) \
-        .filter(table.c.geo_code == geo_code) \
-        .first() or [0.0 for i in xrange(6)]
-
-    total_hospitals, regional_hospitals, central_hospitals, \
-    district_hospitals, clinics, chcs = (i or 0.0 for i in hospitals )
-
-    hospital_breakdown = OrderedDict((
-        ("regional_hospitals", {
-            "name": "Regional Hospitals",
-            "values": {"this": regional_hospitals or 0.0}
-        }),
-        ("central_hospitals", {
-            "name": "Central Hospitals",
-            "values": {"this": central_hospitals or 0.0}
-        }),
-        ("district_hospitals", {
-            "name": "District hospitals",
-            "values": {"this": district_hospitals or 0.0}
-        }),
-        ("clinics", {
-            "name": "Clinics",
-            "values": {"this": clinics or 0.0}
-        }),
-        ("chcs", {
-            "name": "Community health centres",
-            "values": {"this": chcs or 0.0}
-        }),
-    ))
-    add_metadata(hospital_breakdown, table)
+    table = get_datatable('hospitals_2012')
+    keys = ['regional_hospital', 'central_hospital', 'district_hospital', 'clinic', 'chc']
+    hospital_breakdown, total_hospitals = table.get_stat_data(
+        geo_level, geo_code, keys, percent=False,
+        recode={'chc': 'Community health centre'})
 
     people_per_hospital = ratio(total_pop, total_hospitals)
 
-    final_data = {
+    return {
         "total_hospitals": {
             "name": "Hospitals / Clinics",
             "values": {"this": total_hospitals}
@@ -420,15 +313,14 @@ def get_hospitals_profile(geo_code, geo_level, session):
             "values": {"this": people_per_hospital}
         },
     }
-    return final_data
 
 
 def get_households_profile(geo_code, geo_level, session):
     # head of household
     # gender
     head_gender_dist, total_households = get_stat_data(
-            ['gender of household head'], geo_level, geo_code, session,
-            order_by='gender of household head')
+        ['gender of household head'], geo_level, geo_code, session,
+        order_by='gender of household head')
     female_heads = head_gender_dist['Female']['numerators']['this']
 
     # age
@@ -441,41 +333,43 @@ def get_households_profile(geo_code, geo_level, session):
 
     # type of dwelling
     type_of_dwelling_dist, _ = get_stat_data(
-            ['type of dwelling'], geo_level, geo_code, session,
-            recode=TYPE_OF_DWELLING_RECODE,
-            order_by='-total')
+        ['type of dwelling'], geo_level, geo_code, session,
+        recode=TYPE_OF_DWELLING_RECODE,
+        order_by='-total')
     informal = type_of_dwelling_dist['Shack']['numerators']['this']
 
-    return {'total_households': {
-                'name': 'Households',
-                'values': {'this': total_households},
-                },
-            'type_of_dwelling_distribution': type_of_dwelling_dist,
-            'informal': {
-                'name': 'Households that are informal dwellings (shacks)',
-                'values': {'this': percent(informal, total_households)},
-                'numerators': {'this': informal},
-                },
-            'head_of_household': {
-                'gender_distribution': head_gender_dist,
-                'female': {
-                    'name': 'Households with women as their head',
-                    'values': {'this': percent(female_heads, total_households)},
-                    'numerators': {'this': female_heads},
-                    },
-                'under_18': {
-                    'name': 'Households with heads under 18 years old',
-                    'values': {'this': total_under_18},
-                    }
-                },
-           }
+    return {
+        'total_households': {
+            'name': 'Households',
+            'values': {'this': total_households},
+        },
+        'type_of_dwelling_distribution': type_of_dwelling_dist,
+        'informal': {
+            'name': 'Households that are informal dwellings (shacks)',
+            'values': {'this': percent(informal, total_households)},
+            'numerators': {'this': informal},
+        },
+        'head_of_household': {
+            'gender_distribution': head_gender_dist,
+            'female': {
+                'name': 'Households with women as their head',
+                'values': {'this': percent(female_heads, total_households)},
+                'numerators': {'this': female_heads},
+            },
+            'under_18': {
+                'name': 'Households with heads under 18 years old',
+                'values': {'this': total_under_18},
+            }
+        },
+    }
+
 
 def get_service_delivery_profile(geo_code, geo_level, session):
     # water source
     water_src_data, total_wsrc = get_stat_data(
-            ['source of water'], geo_level, geo_code, session,
-            recode=SHORT_WATER_SOURCE_CATEGORIES,
-            order_by='-total')
+        ['source of water'], geo_level, geo_code, session,
+        recode=SHORT_WATER_SOURCE_CATEGORIES,
+        order_by='-total')
     if 'Service provider' in water_src_data:
         total_water_sp = water_src_data['Service provider']['numerators']['this']
     else:
@@ -528,10 +422,10 @@ def get_service_delivery_profile(geo_code, geo_level, session):
 
     # toilets
     toilet_data, total_toilet = get_stat_data(
-            ['toilet facilities'], geo_level, geo_code, session,
-            exclude_zero=True,
-            recode=COLLAPSED_TOILET_CATEGORIES,
-            order_by='-total')
+        ['toilet facilities'], geo_level, geo_code, session,
+        exclude_zero=True,
+        recode=COLLAPSED_TOILET_CATEGORIES,
+        order_by='-total')
 
     total_flush_toilet = 0.0
     total_no_toilet = 0.0
@@ -541,27 +435,28 @@ def get_service_delivery_profile(geo_code, geo_level, session):
         if key == 'None':
             total_no_toilet += data['numerators']['this']
 
-    return {'water_source_distribution': water_src_data,
-            'percentage_water_from_service_provider': {
-                "name": "Are getting water from a regional or local service provider",
-                "numerators": {"this": total_water_sp},
-                "values": {"this": percent(total_water_sp, total_wsrc)},
-            },
-            'percentage_electricity_access': {
-                "name": "Have electricity for at least one of cooking, heating or lighting",
-                "numerators": {"this": total_some_elec},
-                "values": {"this": percent(total_some_elec, total_elec)},
-            },
-            'electricity_access_distribution': elec_access_data,
-            'percentage_flush_toilet_access': {
-                "name": "Have access to flush or chemical toilets",
-                "numerators": {"this": total_flush_toilet},
-                "values": {"this": percent(total_flush_toilet, total_toilet)},
-            },
-            'percentage_no_toilet_access': {
-                "name": "Have no access to any toilets",
-                "numerators": {"this": total_no_toilet},
-                "values": {"this": percent(total_no_toilet, total_toilet)},
-            },
-            'toilet_facilities_distribution': toilet_data,
+    return {
+        'water_source_distribution': water_src_data,
+        'percentage_water_from_service_provider': {
+            "name": "Are getting water from a regional or local service provider",
+            "numerators": {"this": total_water_sp},
+            "values": {"this": percent(total_water_sp, total_wsrc)},
+        },
+        'percentage_electricity_access': {
+            "name": "Have electricity for at least one of cooking, heating or lighting",
+            "numerators": {"this": total_some_elec},
+            "values": {"this": percent(total_some_elec, total_elec)},
+        },
+        'electricity_access_distribution': elec_access_data,
+        'percentage_flush_toilet_access': {
+            "name": "Have access to flush or chemical toilets",
+            "numerators": {"this": total_flush_toilet},
+            "values": {"this": percent(total_flush_toilet, total_toilet)},
+        },
+        'percentage_no_toilet_access': {
+            "name": "Have no access to any toilets",
+            "numerators": {"this": total_no_toilet},
+            "values": {"this": percent(total_no_toilet, total_toilet)},
+        },
+        'toilet_facilities_distribution': toilet_data,
     }

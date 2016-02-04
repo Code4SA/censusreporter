@@ -176,7 +176,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
             <div class="column-half" id="chart-pie-ecd_centres-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
             <div class="column-quarter">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.ecd_learners stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.ecd_learners.total_learners_accomodated stat_type='number' %}
             </div>
         </section>
         <section class="clearfix stat-row grouped-row">
