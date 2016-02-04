@@ -188,8 +188,7 @@ def get_schools_profile(geo_code, geo_level, session):
     table = get_datatable('schools_2015')
     keys = ['primary_schools', 'combined_schools', 'intermediate_schools', 'secondary_schools']
     school_breakdown, total_schools = table.get_stat_data(
-        geo_level, geo_code, keys, percent=False,
-        key_order=keys)
+        geo_level, geo_code, keys, percent=False)
 
     primary_school_ages = ['6', '7', '8', '9', '10', '11', '12', '13']
     secondary_school_ages = ['14', '15', '16', '17', '18']
@@ -248,8 +247,8 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     table = get_datatable('ecd_centres_2014')
     ecd_centres, total_ecd = table.get_stat_data(
-        geo_level, geo_code, percent=True, total='total_ecd_centres',
-        recode=recode, key_order=recode.keys())
+        geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
+        recode=recode)
 
     # incomplete is everything else
     ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
@@ -298,7 +297,7 @@ def get_hospitals_profile(geo_code, geo_level, session):
     table = get_datatable('hospitals_2012')
     keys = ['regional_hospital', 'central_hospital', 'district_hospital', 'clinic', 'chc']
     hospital_breakdown, total_hospitals = table.get_stat_data(
-        geo_level, geo_code, keys, percent=False, key_order=keys,
+        geo_level, geo_code, keys, percent=False,
         recode={'chc': 'Community health centre'})
 
     people_per_hospital = ratio(total_pop, total_hospitals)
