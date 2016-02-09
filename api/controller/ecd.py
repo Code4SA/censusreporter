@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from api.models import get_model_from_fields
 from api.models.tables import get_datatable
-from api.utils import get_session
+from api.utils import get_session, percent
 
 from api.controller.geography import get_geography
 
@@ -226,16 +226,16 @@ def get_schools_profile(geo_code, geo_level, session):
 
 
 def get_ecd_centres_profile(geo_code, geo_level, session):
-    # ECD Centres
-    ecd_age_groups, ecd_children = get_stat_data(
+
+    children_age_groups, total_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
         only=['0', '1', '2', '3', '4', '5'],
         recode=ECD_AGE_CATEGORIES,
         percent=False)
 
-    ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
-    ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
+    children_0_to_2 = children_age_groups['0-2']['values']['this']
+    children_3_to_5 = children_age_groups['3-5']['values']['this']
 
     recode = OrderedDict([
         ('reg_full', 'Registered'),
@@ -246,43 +246,52 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ])
 
     table = get_datatable('ecd_centres_2014')
-    ecd_centres, total_ecd = table.get_stat_data(
+    ecd_centres, total_ecd_centres = table.get_stat_data(
         geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
         recode=recode)
 
     # incomplete is everything else
-    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
+    ecd_incomplete = total_ecd_centres - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
     ecd_centres['reg_incomplete'] = {
         "name": "Registration incomplete",
-        "values": {"this": percent(ecd_incomplete, total_ecd)},
+        "values": {"this": percent(ecd_incomplete, total_ecd_centres)},
         "numerators": {"this": ecd_incomplete}
     }
 
-    ecd_learners, _ = table.get_stat_data(
-        geo_level, geo_code, 'total_learners_accomodated', percent=False)
-    ecd_learners['total_learners_accomodated']['name'] = 'Learners accomodated in ECD centres in the region'
 
-    ecd_0_to_5 = ratio(ecd_children, total_ecd)
-    ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
-    ecd_3_to_5 = ratio(ecd_children_3_to_5, total_ecd)
+    children_3_to_5_enrolled, _ = table.get_stat_data(
+        geo_level, geo_code, 'total_learners_accomodated', percent=False)
+    children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children (3-5 years) enrolled in ECD centres'
+
+    children_3_to_5_coverage = percent(
+        children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
+        children_3_to_5)
+
+    ecd_0_to_5 = ratio(total_children, total_ecd_centres)
+    ecd_0_to_2 = ratio(children_0_to_2, total_ecd_centres)
+    ecd_3_to_5 = ratio(children_3_to_5, total_ecd_centres)
 
     return {
         "total_ecd_centres": {
             "name": "ECD centres",
-            "values": {"this": total_ecd}
+            "values": {"this": total_ecd_centres}
         },
         "ecd_centre_breakdown": ecd_centres,
-        "ecd_learners": ecd_learners,
+        "children_3_to_5_enrolled": children_3_to_5_enrolled,
+        "children_3_to_5_coverage": {
+            "name": "ECD centre enrolment coverage (3-5 years) in the region",
+            "values": {"this": children_3_to_5_coverage}
+        },
         "children_per_ecd_centre": {
-            "name": "Children (0-5 years) living in the region for each ECD Centre",
+            "name": "Children (0-5 years) living in the region for each ECD centre",
             "values": {"this": ecd_0_to_5}
         },
         "children_0_to_2_per_ecd_centre": {
-            "name": "Children (0-2 years) living in the region for each ECD Centre",
+            "name": "Children (0-2 years) living in the region for each ECD centre",
             "values": {"this": ecd_0_to_2}
         },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Children (3-5 years) living in the region for each ECD Centre",
+            "name": "Children (3-5 years) living in the region for each ECD centre",
             "values": {"this": ecd_3_to_5}
         },
     }
