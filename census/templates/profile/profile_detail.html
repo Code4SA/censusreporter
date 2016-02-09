@@ -180,7 +180,10 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
         </section>
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#centre_coverage" id="ecd_centres">Centre Coverage<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#centre_coverage" id="ecd_centres">Centre Coverage (children aged 3-5 years)<i class="fa fa-link"></i></a></h2>
+            <aside>
+                <p>* Percentage of children living in the area who are enrolled in ECD centres</p>
+            </aside>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_enrolled.total_learners_accomodated stat_type='number' %}
             </div>
@@ -190,13 +193,10 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
         </section>
         <section class="clearfix stat-row grouped-row">
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_per_ecd_centre stat_type='number' %}
-            </div>
-            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_per_ecd_centre stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_0_to_2_per_ecd_centre stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.enrolled_children_3_to_5_per_ecd_centre stat_type='number' %}
             </div>
         </section>
     </div>

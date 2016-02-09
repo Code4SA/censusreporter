@@ -261,18 +261,29 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     children_3_to_5_enrolled, _ = table.get_stat_data(
         geo_level, geo_code, 'total_learners_accomodated', percent=False)
-    children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children (3-5 years) enrolled in ECD centres'
+    children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children enrolled in ECD centres'
 
     children_3_to_5_coverage = percent(
         children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
         children_3_to_5)
 
-    ecd_0_to_5 = ratio(total_children, total_ecd_centres)
-    ecd_0_to_2 = ratio(children_0_to_2, total_ecd_centres)
-    ecd_3_to_5 = ratio(children_3_to_5, total_ecd_centres)
+    children_3_to_5_per_ecd_centre = ratio(children_3_to_5, total_ecd_centres)
+    enrolled_children_3_to_5_per_ecd_centre = ratio(
+        children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
+        total_ecd_centres)
 
+    # Currently there's no data available for these datapoints.
+    # They are displayed to show lack of information.
     registered_ecd_programmes = {
         "name": "Registered ECD programs",
+        "values": {"this": None},
+    }
+    children_in_ecd_programmes = {
+        "name": "Children in programmes",
+        "values": {"this": None},
+    }
+    children_in_play_groups = {
+        "name": "Children in play groups",
         "values": {"this": None},
     }
 
@@ -285,21 +296,19 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "registered_ecd_programmes": registered_ecd_programmes,
         "children_3_to_5_enrolled": children_3_to_5_enrolled,
         "children_3_to_5_coverage": {
-            "name": "ECD centre enrolment coverage (3-5 years) in the region",
+            "name": "ECD centre enrolment coverage*",
             "values": {"this": children_3_to_5_coverage}
         },
-        "children_per_ecd_centre": {
-            "name": "Children (0-5 years) living in the region for each ECD centre",
-            "values": {"this": ecd_0_to_5}
-        },
-        "children_0_to_2_per_ecd_centre": {
-            "name": "Children (0-2 years) living in the region for each ECD centre",
-            "values": {"this": ecd_0_to_2}
-        },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Children (3-5 years) living in the region for each ECD centre",
-            "values": {"this": ecd_3_to_5}
+            "name": "Average number of children living in the region per ECD centre",
+            "values": {"this": children_3_to_5_per_ecd_centre}
         },
+        "enrolled_children_3_to_5_per_ecd_centre": {
+            "name": "Average number of children enrolled in each ECD centre",
+            "values": {"this": enrolled_children_3_to_5_per_ecd_centre}
+        },
+        "children_in_ecd_programmes": children_in_ecd_programmes,
+        "children_in_play_groups": children_in_play_groups
     }
 
 
