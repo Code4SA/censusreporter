@@ -271,12 +271,18 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_0_to_2 = ratio(children_0_to_2, total_ecd_centres)
     ecd_3_to_5 = ratio(children_3_to_5, total_ecd_centres)
 
+    registered_ecd_programmes = {
+        "name": "Registered ECD programs",
+        "values": {"this": None},
+    }
+
     return {
         "total_ecd_centres": {
             "name": "ECD centres",
             "values": {"this": total_ecd_centres}
         },
         "ecd_centre_breakdown": ecd_centres,
+        "registered_ecd_programmes": registered_ecd_programmes,
         "children_3_to_5_enrolled": children_3_to_5_enrolled,
         "children_3_to_5_coverage": {
             "name": "ECD centre enrolment coverage (3-5 years) in the region",

@@ -170,13 +170,17 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#ecd_centres" id="ecd_centres">Early Childhood Development Centres<i class="fa fa-link"></i></a></h2>
-            <div class="column-half">
+            <h2 class="header-for-columns"><a class="permalink" href="#registered_centres" id="ecd_centres">Registered Centres<i class="fa fa-link"></i></a></h2>
+            <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.total_ecd_centres stat_type='number' %}
             </div>
             <div class="column-half" id="chart-pie-ecd_centres-ecd_centre_breakdown" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by registration status"></div>
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.registered_ecd_programmes stat_type='number' %}
+            </div>
         </section>
-        <section class="clearfix stat-row grouped-row">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#centre_coverage" id="ecd_centres">Centre Coverage<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_enrolled.total_learners_accomodated stat_type='number' %}
             </div>
