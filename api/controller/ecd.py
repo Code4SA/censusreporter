@@ -230,11 +230,10 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     children_age_groups, total_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5', '6'],
+        only=['3', '4', '5', '6'],
         recode=ECD_AGE_CATEGORIES,
         percent=False)
 
-    children_0_to_2 = children_age_groups['0-2']['values']['this']
     children_3_to_5 = children_age_groups['3-5']['values']['this']
 
     # This will not be needed when the column names for are changed.
@@ -248,13 +247,13 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     table = get_datatable('ecd_centres_2014')
 
-    ecd_centres, total_ecd_centres = table.get_stat_data(
+    ecd_centres_by_registration, total_ecd_centres = table.get_stat_data(
         geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
         recode=recode)
 
     # incomplete is everything else
-    ecd_incomplete = total_ecd_centres - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
-    ecd_centres['reg_incomplete'] = {
+    ecd_incomplete = total_ecd_centres - sum(ecd_centres_by_registration[k]['numerators']['this'] for k in recode.itervalues())
+    ecd_centres_by_registration['reg_incomplete'] = {
         "name": "Registration incomplete",
         "values": {"this": percent(ecd_incomplete, total_ecd_centres)},
         "numerators": {"this": ecd_incomplete}
@@ -269,7 +268,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         children_3_to_5)
 
     children_3_to_5_per_ecd_centre = ratio(children_3_to_5, total_ecd_centres)
-    enrolled_children_3_to_5_per_ecd_centre = ratio(
+    children_3_to_5_per_ecd_centre_enrolled = ratio(
         children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
         total_ecd_centres)
 
@@ -335,10 +334,10 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     return {
         "total_ecd_centres": {
-            "name": "ECD centres",
+            "name": "Number of ECD centres",
             "values": {"this": total_ecd_centres}
         },
-        "ecd_centre_breakdown": ecd_centres,
+        "ecd_centres_by_registration": ecd_centres_by_registration,
         "ecd_centres_by_type": ecd_centres_by_type,
         "registered_ecd_programmes": registered_ecd_programmes,
         "children_3_to_5_enrolled": children_3_to_5_enrolled,
@@ -350,9 +349,9 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "name": "Average number of children living in the region per ECD centre",
             "values": {"this": children_3_to_5_per_ecd_centre}
         },
-        "enrolled_children_3_to_5_per_ecd_centre": {
+        "children_3_to_5_per_ecd_centre_enrolled": {
             "name": "Average number of children enrolled in each ECD centre",
-            "values": {"this": enrolled_children_3_to_5_per_ecd_centre}
+            "values": {"this": children_3_to_5_per_ecd_centre_enrolled}
         },
         "children_in_ecd_programmes": children_in_ecd_programmes,
         "children_in_play_groups": children_in_play_groups,
@@ -364,6 +363,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
 
 def get_ecd_educators_profile(geo_code, geo_level, session):
+    # These values will be filled as information becomes available.
     total_practitioners_per_child = {
         "name": "Number of practitioners per child",
         "values": {"this": None}
@@ -387,6 +387,7 @@ def get_ecd_educators_profile(geo_code, geo_level, session):
 
 
 def get_ecd_budgets_profile(geo_code, geo_level, session):
+    # These values will be filled as information becomes available.
     ecd_subsidies_budgeted = {
         "name": "Amount budgeted for early learning subsidies",
         "values": {"this": None}
