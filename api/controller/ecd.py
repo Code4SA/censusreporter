@@ -326,6 +326,11 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "values": {"this": None}
     }
 
+    children_receiving_subsidy = {
+        "name": "Children receiving an early learning subsidy",
+        "values": {"this": None}
+    }
+
     return {
         "total_ecd_centres": {
             "name": "ECD centres",
@@ -351,7 +356,8 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "children_in_play_groups": children_in_play_groups,
         "children_grade_r_age": children_grade_r_age,
         "ecd_centres_with_grade_r_learners": ecd_centres_with_grade_r_learners,
-        "schools_with_grade_r_learners": schools_with_grade_r_learners
+        "schools_with_grade_r_learners": schools_with_grade_r_learners,
+        "children_receiving_subsidy": children_receiving_subsidy
     }
 
 
