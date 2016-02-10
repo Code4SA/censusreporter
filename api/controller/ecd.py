@@ -27,9 +27,7 @@ ECD_AGE_CATEGORIES = {
     '3': '3-5',
     '4': '3-5',
     '5': '3-5',
-    '6': '6-9',
-    '7': '6-9',
-    '8': '6-9'
+    '6': '6',
 }
 
 TYPE_OF_DWELLING_RECODE = {
@@ -117,7 +115,7 @@ def get_demographics_profile(geo_code, geo_level, session):
     ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5', '6', '7', '8'],
+        only=['0', '1', '2', '3', '4', '5', '6'],
         recode=ECD_AGE_CATEGORIES)
 
     ecd_gender, total_ecd_gender = get_stat_data(
@@ -230,7 +228,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     children_age_groups, total_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5'],
+        only=['0', '1', '2', '3', '4', '5', '6'],
         recode=ECD_AGE_CATEGORIES,
         percent=False)
 
@@ -273,8 +271,10 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
         total_ecd_centres)
 
+    # #########################################################
     # Currently there's no data available for these datapoints.
     # They are displayed in the template to show this fact.
+
     registered_ecd_programmes = {
         "name": "Registered ECD programs",
         "values": {"this": None},
@@ -311,6 +311,21 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         },
     }
 
+    children_grade_r_age = {
+        "name": "Children of Grade R age (6 years)",
+        "values": {"this": children_age_groups['6']['values']['this']}
+    }
+
+    ecd_centres_with_grade_r_learners = {
+        "name": "Centres with Grade R learners",
+        "values": {"this": None}
+    }
+
+    schools_with_grade_r_learners = {
+        "name": "Schools with Grade R learners",
+        "values": {"this": None}
+    }
+
     return {
         "total_ecd_centres": {
             "name": "ECD centres",
@@ -333,7 +348,10 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "values": {"this": enrolled_children_3_to_5_per_ecd_centre}
         },
         "children_in_ecd_programmes": children_in_ecd_programmes,
-        "children_in_play_groups": children_in_play_groups
+        "children_in_play_groups": children_in_play_groups,
+        "children_grade_r_age": children_grade_r_age,
+        "ecd_centres_with_grade_r_learners": ecd_centres_with_grade_r_learners,
+        "schools_with_grade_r_learners": schools_with_grade_r_learners
     }
 
 
