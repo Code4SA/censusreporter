@@ -170,7 +170,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#registered_centres" id="ecd_centres">Registered Centres<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#registered_centres" id="ecd_centres">ECD Centre overview<i class="fa fa-link"></i></a></h2>
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.total_ecd_centres stat_type='number' %}
             </div>
@@ -178,6 +178,12 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.registered_ecd_programmes stat_type='number' %}
             </div>
+        </section>
+        <section class="clearfix stat-row group-row">
+            <div class="column-quarter">
+                <p></p>
+            </div>
+            <div class="column-half" id="chart-pie-ecd_centres-ecd_centres_by_type" data-stat-type="percentage" data-chart-title="Breakdown of ECD centres by type of centre"></div>
         </section>
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#centre_coverage" id="ecd_centres">Centre Coverage (children aged 3-5 years)<i class="fa fa-link"></i></a></h2>
@@ -199,7 +205,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.enrolled_children_3_to_5_per_ecd_centre stat_type='number' %}
             </div>
         </section>
-        <section class="clearfix stat-row grouped-row">
+        <section class="clearfix stat-row">
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
             </div>

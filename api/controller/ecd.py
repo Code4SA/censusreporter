@@ -237,6 +237,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     children_0_to_2 = children_age_groups['0-2']['values']['this']
     children_3_to_5 = children_age_groups['3-5']['values']['this']
 
+    # This will not be needed when the column names for are changed.
     recode = OrderedDict([
         ('reg_full', 'Registered'),
         ('reg_conditional', 'Conditionally registered'),
@@ -246,6 +247,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ])
 
     table = get_datatable('ecd_centres_2014')
+
     ecd_centres, total_ecd_centres = table.get_stat_data(
         geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
         recode=recode)
@@ -257,7 +259,6 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "values": {"this": percent(ecd_incomplete, total_ecd_centres)},
         "numerators": {"this": ecd_incomplete}
     }
-
 
     children_3_to_5_enrolled, _ = table.get_stat_data(
         geo_level, geo_code, 'total_learners_accomodated', percent=False)
@@ -273,7 +274,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         total_ecd_centres)
 
     # Currently there's no data available for these datapoints.
-    # They are displayed to show lack of information.
+    # They are displayed in the template to show this fact.
     registered_ecd_programmes = {
         "name": "Registered ECD programs",
         "values": {"this": None},
@@ -287,12 +288,36 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "values": {"this": None},
     }
 
+    ecd_centres_by_type = {
+        "school_based": {
+            "name": 'School based',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+        "home_based": {
+            "name": 'Home based',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+        "community_based": {
+            "name": 'Community based',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+        "other": {
+            "name": 'Other',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+    }
+
     return {
         "total_ecd_centres": {
             "name": "ECD centres",
             "values": {"this": total_ecd_centres}
         },
         "ecd_centre_breakdown": ecd_centres,
+        "ecd_centres_by_type": ecd_centres_by_type,
         "registered_ecd_programmes": registered_ecd_programmes,
         "children_3_to_5_enrolled": children_3_to_5_enrolled,
         "children_3_to_5_coverage": {
