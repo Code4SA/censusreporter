@@ -217,14 +217,15 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
         </section>
         <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Grade R<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_grade_r_age stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.ecd_centres_with_grade_r stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.ecd_centres_with_grade_r_learners stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.schools_with_grade_r stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.schools_with_grade_r_learners stat_type='number' %}
             </div>
         </section>
     </div>
@@ -248,6 +249,23 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.untrained_practitioners_per_child stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
+        <h1>ECD budgets</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Early learning subsidies<i class="fa fa-link"></i></a></h2>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_budgets.ecd_subsidies_budgeted stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_budgets.ecd_subsidies_paid stat_type='number' %}
             </div>
         </section>
     </div>

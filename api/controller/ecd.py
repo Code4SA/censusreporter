@@ -17,6 +17,7 @@ PROFILE_SECTIONS = (
     "schools",
     "ecd_centres",
     "ecd_educators",
+    "ecd_budgets",
     "households",
     "service_delivery"
 )
@@ -272,7 +273,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
         total_ecd_centres)
 
-    # #########################################################
+
     # Currently there's no data available for these datapoints.
     # They are displayed in the template to show this fact.
 
@@ -383,6 +384,24 @@ def get_ecd_educators_profile(geo_code, geo_level, session):
         "trained_practitioners_per_child": trained_practitioners_per_child,
         "untrained_practitioners_per_child": untrained_practitioners_per_child,
     }
+
+
+def get_ecd_budgets_profile(geo_code, geo_level, session):
+    ecd_subsidies_budgeted = {
+        "name": "Amount budgeted for early learning subsidies",
+        "values": {"this": None}
+    }
+
+    ecd_subsidies_paid = {
+        "name": "Amount paid for early learning subsidies",
+        "values": {"this": None}
+    }
+
+    return {
+        "ecd_subsidies_budgeted": ecd_subsidies_budgeted,
+        "ecd_subsidies_paid": ecd_subsidies_paid
+    }
+
 
 def get_hospitals_profile(geo_code, geo_level, session):
     # population group
