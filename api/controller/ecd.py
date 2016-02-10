@@ -16,6 +16,7 @@ PROFILE_SECTIONS = (
     "hospitals",
     "schools",
     "ecd_centres",
+    "ecd_educators",
     "households",
     "service_delivery"
 )
@@ -360,6 +361,28 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "children_receiving_subsidy": children_receiving_subsidy
     }
 
+
+def get_ecd_educators_profile(geo_code, geo_level, session):
+    total_practitioners_per_child = {
+        "name": "Number of practitioners per child",
+        "values": {"this": None}
+    }
+
+    trained_practitioners_per_child = {
+        "name": "Number of trained practitioners per child *",
+        "values": {"this": None}
+    }
+
+    untrained_practitioners_per_child = {
+        "name": "Number of untrained practitioners per child *",
+        "values": {"this": None}
+    }
+
+    return {
+        "total_practitioners_per_child": total_practitioners_per_child,
+        "trained_practitioners_per_child": trained_practitioners_per_child,
+        "untrained_practitioners_per_child": untrained_practitioners_per_child,
+    }
 
 def get_hospitals_profile(geo_code, geo_level, session):
     # population group

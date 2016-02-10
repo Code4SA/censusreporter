@@ -232,6 +232,29 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
 
 <article class="clearfix">
     <header class="section-contents">
+        <h1>ECD educators</h1>
+    </header>
+    <div class="section-container">
+        <section class="clearfix stat-row">
+            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Practitioners at ECD centres<i class="fa fa-link"></i></a></h2>
+            <aside>
+                <p>* Trained: NQF4 or higher</p>
+            </aside>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.total_practitioners_per_child stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.trained_practitioners_per_child stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.untrained_practitioners_per_child stat_type='number' %}
+            </div>
+        </section>
+    </div>
+</article>
+
+<article class="clearfix">
+    <header class="section-contents">
         <h1>Schools</h1>
     </header>
     <div class="section-container">
