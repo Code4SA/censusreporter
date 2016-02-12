@@ -179,19 +179,13 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.registered_ecd_programmes stat_type='number' %}
             </div>
         </section>
-        <section class="clearfix stat-row group-row">
-            <div class="column-quarter">
-                <p></p>
-            </div>
+        <section class="clearfix stat-row">
             <div class="column-half">
                 <div id="chart-histogram-ecd_centres-ecd_centres_by_type" data-chart-title="Breakdown of ECD centres by type of centre" data-stat-type="scaled-percentage"></div>
             </div>
         </section>
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#centre_coverage" id="ecd_centres">Centre Coverage (children aged 3-5 years)<i class="fa fa-link"></i></a></h2>
-            <aside>
-                <p>* Percentage of children living in the area who are enrolled in ECD centres</p>
-            </aside>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_enrolled.total_learners_accomodated stat_type='number' %}
             </div>
@@ -211,14 +205,6 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
         </section>
         <section class="clearfix stat-row">
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
-            </div>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_play_groups stat_type='number' %}
-            </div>
-        </section>
-        <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Grade R learners<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_grade_r_age stat_type='number' %}
@@ -228,6 +214,14 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.schools_with_grade_r_learners stat_type='number' %}
+            </div>
+        </section>
+        <section class="clearfix stat-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_play_groups stat_type='number' %}
             </div>
         </section>
     </div>
