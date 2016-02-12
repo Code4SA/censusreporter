@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from api.models import get_model_from_fields
 from api.models.tables import get_datatable
-from api.utils import get_session
+from api.utils import get_session, percent
 
 from api.controller.geography import get_geography
 
@@ -16,6 +16,8 @@ PROFILE_SECTIONS = (
     "hospitals",
     "schools",
     "ecd_centres",
+    "ecd_educators",
+    "ecd_budgets",
     "households",
     "service_delivery"
 )
@@ -27,9 +29,7 @@ ECD_AGE_CATEGORIES = {
     '3': '3-5',
     '4': '3-5',
     '5': '3-5',
-    '6': '6-9',
-    '7': '6-9',
-    '8': '6-9'
+    '6': '6',
 }
 
 TYPE_OF_DWELLING_RECODE = {
@@ -117,7 +117,7 @@ def get_demographics_profile(geo_code, geo_level, session):
     ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5', '6', '7', '8'],
+        only=['0', '1', '2', '3', '4', '5', '6'],
         recode=ECD_AGE_CATEGORIES)
 
     ecd_gender, total_ecd_gender = get_stat_data(
@@ -226,17 +226,17 @@ def get_schools_profile(geo_code, geo_level, session):
 
 
 def get_ecd_centres_profile(geo_code, geo_level, session):
-    # ECD Centres
-    ecd_age_groups, ecd_children = get_stat_data(
+
+    children_age_groups, total_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5'],
+        only=['3', '4', '5', '6'],
         recode=ECD_AGE_CATEGORIES,
         percent=False)
 
-    ecd_children_0_to_2 = ecd_age_groups['0-2']['values']['this']
-    ecd_children_3_to_5 = ecd_age_groups['3-5']['values']['this']
+    children_3_to_5 = children_age_groups['3-5']['values']['this']
 
+    # This will not be needed when the column names for are changed.
     recode = OrderedDict([
         ('reg_full', 'Registered'),
         ('reg_conditional', 'Conditionally registered'),
@@ -246,45 +246,161 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ])
 
     table = get_datatable('ecd_centres_2014')
-    ecd_centres, total_ecd = table.get_stat_data(
+
+    ecd_centres_by_registration, total_ecd_centres = table.get_stat_data(
         geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
         recode=recode)
 
     # incomplete is everything else
-    ecd_incomplete = total_ecd - sum(ecd_centres[k]['numerators']['this'] for k in recode.itervalues())
-    ecd_centres['reg_incomplete'] = {
+    ecd_incomplete = total_ecd_centres - sum(ecd_centres_by_registration[k]['numerators']['this'] for k in recode.itervalues())
+    ecd_centres_by_registration['reg_incomplete'] = {
         "name": "Registration incomplete",
-        "values": {"this": percent(ecd_incomplete, total_ecd)},
+        "values": {"this": percent(ecd_incomplete, total_ecd_centres)},
         "numerators": {"this": ecd_incomplete}
     }
 
-    ecd_learners, _ = table.get_stat_data(
+    children_3_to_5_enrolled, _ = table.get_stat_data(
         geo_level, geo_code, 'total_learners_accomodated', percent=False)
-    ecd_learners['total_learners_accomodated']['name'] = 'Learners accomodated in ECD centres in the region'
+    children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children enrolled in ECD centres'
 
-    ecd_0_to_5 = ratio(ecd_children, total_ecd)
-    ecd_0_to_2 = ratio(ecd_children_0_to_2, total_ecd)
-    ecd_3_to_5 = ratio(ecd_children_3_to_5, total_ecd)
+    children_3_to_5_coverage = percent(
+        children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
+        children_3_to_5)
+
+    children_3_to_5_per_ecd_centre = ratio(children_3_to_5, total_ecd_centres)
+    children_3_to_5_per_ecd_centre_enrolled = ratio(
+        children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
+        total_ecd_centres)
+
+
+    # Currently there's no data available for these datapoints.
+    # They are displayed in the template to show this fact.
+
+    registered_ecd_programmes = {
+        "name": "Registered ECD programs",
+        "values": {"this": None},
+    }
+    children_in_ecd_programmes = {
+        "name": "Children in programmes",
+        "values": {"this": None},
+    }
+    children_in_play_groups = {
+        "name": "Children in play groups",
+        "values": {"this": None},
+    }
+
+    ecd_centres_by_type = {
+        "school_based": {
+            "name": 'School based',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+        "home_based": {
+            "name": 'Home based',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+        "community_based": {
+            "name": 'Community based',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+        "other": {
+            "name": 'Other',
+            "values": {"this": None},
+            "numerators": {"this": None}
+        },
+    }
+
+    children_grade_r_age = {
+        "name": "Children of Grade R age (6 years)",
+        "values": {"this": children_age_groups['6']['values']['this']}
+    }
+
+    ecd_centres_with_grade_r_learners = {
+        "name": "Centres with Grade R learners",
+        "values": {"this": None}
+    }
+
+    schools_with_grade_r_learners = {
+        "name": "Schools with Grade R learners",
+        "values": {"this": None}
+    }
+
+    children_receiving_subsidy = {
+        "name": "Children receiving an early learning subsidy",
+        "values": {"this": None}
+    }
 
     return {
         "total_ecd_centres": {
-            "name": "ECD centres",
-            "values": {"this": total_ecd}
+            "name": "Number of ECD centres",
+            "values": {"this": total_ecd_centres}
         },
-        "ecd_centre_breakdown": ecd_centres,
-        "ecd_learners": ecd_learners,
-        "children_per_ecd_centre": {
-            "name": "Children (0-5 years) living in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_5}
-        },
-        "children_0_to_2_per_ecd_centre": {
-            "name": "Children (0-2 years) living in the region for each ECD Centre",
-            "values": {"this": ecd_0_to_2}
+        "ecd_centres_by_registration": ecd_centres_by_registration,
+        "ecd_centres_by_type": ecd_centres_by_type,
+        "registered_ecd_programmes": registered_ecd_programmes,
+        "children_3_to_5_enrolled": children_3_to_5_enrolled,
+        "children_3_to_5_coverage": {
+            "name": "Enrolment coverage. Children living in the area who are enrolled in ECD centres",
+            "values": {"this": children_3_to_5_coverage}
         },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Children (3-5 years) living in the region for each ECD Centre",
-            "values": {"this": ecd_3_to_5}
+            "name": "Average number of children living in the region per ECD centre",
+            "values": {"this": children_3_to_5_per_ecd_centre}
         },
+        "children_3_to_5_per_ecd_centre_enrolled": {
+            "name": "Average number of children enrolled in each ECD centre",
+            "values": {"this": children_3_to_5_per_ecd_centre_enrolled}
+        },
+        "children_in_ecd_programmes": children_in_ecd_programmes,
+        "children_in_play_groups": children_in_play_groups,
+        "children_grade_r_age": children_grade_r_age,
+        "ecd_centres_with_grade_r_learners": ecd_centres_with_grade_r_learners,
+        "schools_with_grade_r_learners": schools_with_grade_r_learners,
+        "children_receiving_subsidy": children_receiving_subsidy
+    }
+
+
+def get_ecd_educators_profile(geo_code, geo_level, session):
+    # These values will be filled as information becomes available.
+    total_practitioners_per_child = {
+        "name": "Number of practitioners per child",
+        "values": {"this": None}
+    }
+
+    trained_practitioners_per_child = {
+        "name": "Number of trained practitioners per child *",
+        "values": {"this": None}
+    }
+
+    untrained_practitioners_per_child = {
+        "name": "Number of untrained practitioners per child *",
+        "values": {"this": None}
+    }
+
+    return {
+        "total_practitioners_per_child": total_practitioners_per_child,
+        "trained_practitioners_per_child": trained_practitioners_per_child,
+        "untrained_practitioners_per_child": untrained_practitioners_per_child,
+    }
+
+
+def get_ecd_budgets_profile(geo_code, geo_level, session):
+    # These values will be filled as information becomes available.
+    ecd_subsidies_budgeted = {
+        "name": "Amount budgeted for early learning subsidies",
+        "values": {"this": None}
+    }
+
+    ecd_subsidies_paid = {
+        "name": "Amount paid for early learning subsidies",
+        "values": {"this": None}
+    }
+
+    return {
+        "ecd_subsidies_budgeted": ecd_subsidies_budgeted,
+        "ecd_subsidies_paid": ecd_subsidies_paid
     }
 
 
