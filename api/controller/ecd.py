@@ -236,7 +236,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     children_3_to_5 = children_age_groups['3-5']['values']['this']
 
-    # This will not be needed when the column names for are changed.
+    # This will not be needed when the column names for centres are changed.
     recode = OrderedDict([
         ('reg_full', 'Registered'),
         ('reg_conditional', 'Conditionally registered'),
@@ -259,22 +259,23 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "numerators": {"this": ecd_incomplete}
     }
 
-    children_3_to_5_enrolled, _ = table.get_stat_data(
-        geo_level, geo_code, 'total_learners_accomodated', percent=False)
-    children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children enrolled in ECD centres'
+    table = get_datatable('ecd_children_enrolled')
+    children_enrolled, _ = table.get_stat_data(
+         geo_level, geo_code, percent=False)
+
+    # children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children enrolled in ECD centres'
 
     children_3_to_5_coverage = percent(
-        children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
+        children_enrolled['children_enrolled_age_3_to_5']['values']['this'],
         children_3_to_5)
 
     children_3_to_5_per_ecd_centre = ratio(children_3_to_5, total_ecd_centres)
     children_3_to_5_per_ecd_centre_enrolled = ratio(
-        children_3_to_5_enrolled['total_learners_accomodated']['values']['this'],
+        children_enrolled['children_enrolled_age_3_to_5']['values']['this'],
         total_ecd_centres)
 
-
     # Currently there's no data available for these datapoints.
-    # They are displayed in the template to show this fact.
+    # They are displayed in the template to promote this fact.
 
     registered_ecd_programmes = {
         "name": "Registered ECD programs",
@@ -340,7 +341,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "ecd_centres_by_registration": ecd_centres_by_registration,
         "ecd_centres_by_type": ecd_centres_by_type,
         "registered_ecd_programmes": registered_ecd_programmes,
-        "children_3_to_5_enrolled": children_3_to_5_enrolled,
+        "children_enrolled_age_3_to_5": children_enrolled['children_enrolled_age_3_to_5'],
         "children_3_to_5_coverage": {
             "name": "Enrolment coverage. Children living in the area who are enrolled in ECD centres",
             "values": {"this": children_3_to_5_coverage}
