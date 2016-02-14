@@ -262,8 +262,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     table = get_datatable('ecd_children_enrolled')
     children_enrolled, _ = table.get_stat_data(
          geo_level, geo_code, percent=False)
-
-    # children_3_to_5_enrolled['total_learners_accomodated']['name'] = 'Children enrolled in ECD centres'
+    children_enrolled['children_enrolled_age_3_to_5']['name'] = 'Children enrolled in ECD centres'
 
     children_3_to_5_coverage = percent(
         children_enrolled['children_enrolled_age_3_to_5']['values']['this'],
