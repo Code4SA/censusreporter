@@ -763,3 +763,12 @@ SimpleTable(
     dataset='Audit of ECD Centres - National Report',
     year='2014'
 )
+SimpleTable(
+    id='ecd_children_enrolled',
+    universe='Number of children enrolled in ECD Centres',
+    total_column=None,
+    description='Number of children enrolled in ECD Centres',
+    dataset='Audit of ECD Centres - National Report',
+    year='2013'
+)
+
