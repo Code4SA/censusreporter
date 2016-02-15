@@ -372,12 +372,28 @@ def get_ecd_educators_profile(geo_code, geo_level, session):
 
 
 def get_ecd_budgets_profile(geo_code, geo_level, session):
+    table = get_datatable('ecd_grants')
+    ecd_grants, _ = table.get_stat_data(
+        geo_level, geo_code, percent=False)
+
+    csg = ecd_grants['child_support_grant']['values']['this']
+    monthly_csg = 330.00
+
+    child_support_grants = {
+        "name": "Learners in centres receiving child support grants",
+        "values": {"this": csg}
+    }
+
+
+    child_support_grants_amount = {
+        "name": "Approximate amount paid as child support grants to children in ECD centres (monthly)",
+        "values": {"this": csg * monthly_csg}
+    }
     # These values will be filled as information becomes available.
     ecd_subsidies_budgeted = {
         "name": "Amount budgeted for early learning subsidies",
         "values": {"this": None}
     }
-
     ecd_subsidies_paid = {
         "name": "Amount paid for early learning subsidies",
         "values": {"this": None}
@@ -385,7 +401,9 @@ def get_ecd_budgets_profile(geo_code, geo_level, session):
 
     return {
         "ecd_subsidies_budgeted": ecd_subsidies_budgeted,
-        "ecd_subsidies_paid": ecd_subsidies_paid
+        "ecd_subsidies_paid": ecd_subsidies_paid,
+        "child_support_grants": child_support_grants,
+        "child_support_grants_amount": child_support_grants_amount
     }
 
 

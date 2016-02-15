@@ -269,6 +269,14 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_budgets.ecd_subsidies_paid stat_type='number' %}
             </div>
         </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_budgets.child_support_grants stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_budgets.child_support_grants_amount stat_type='number' %}
+            </div>
+        </section>
     </div>
 </article>
 
