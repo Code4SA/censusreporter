@@ -403,6 +403,13 @@ def get_hospitals_profile(geo_code, geo_level, session):
 
     people_per_hospital = ratio(total_pop, total_hospitals)
 
+    _, ecd_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=['0', '1', '2', '3', '4', '5'])
+
+    children_0_to_5_per_hospital = ratio(ecd_children, total_hospitals)
+
     return {
         "total_hospitals": {
             "name": "Hospitals / Clinics",
@@ -412,6 +419,10 @@ def get_hospitals_profile(geo_code, geo_level, session):
         "people_per_hospital": {
             "name": "People living in the area for each hospital / clinic",
             "values": {"this": people_per_hospital}
+        },
+        "children_0_to_5_per_hospital": {
+            "name": "Children (aged 0-5 years) living in the area for each hospital / clinic",
+            "values": {"this": children_0_to_5_per_hospital}
         },
     }
 

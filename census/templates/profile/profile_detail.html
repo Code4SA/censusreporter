@@ -314,6 +314,11 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.people_per_hospital stat_type='number' %}
             </div>
         </section>
+        <section class="clearfix stat-row gouped-row">
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.children_0_to_5_per_hospital stat_type='number' %}
+            </div>
+        </section>
     </div>
 </article>
 
