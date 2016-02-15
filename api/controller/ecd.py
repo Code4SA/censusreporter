@@ -213,7 +213,7 @@ def get_schools_profile(geo_code, geo_level, session):
         },
         "school_breakdown": school_breakdown,
         "children_per_primary_school": {
-            "name": "Children (6-13 years) in the region for each primary school",
+            "name": "Children (6-13 years) in the area for each primary school",
             "values": {"this": children_per_primary_school}
         },
         "children_per_secondary_school": {
@@ -320,7 +320,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "values": {"this": children_3_to_5_coverage}
         },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Average number of children living in the region per ECD centre",
+            "name": "Average number of children living in the area per ECD centre",
             "values": {"this": children_3_to_5_per_ecd_centre}
         },
         "children_3_to_5_per_ecd_centre_enrolled": {
@@ -405,7 +405,7 @@ def get_hospitals_profile(geo_code, geo_level, session):
         },
         "hospital_breakdown": hospital_breakdown,
         "people_per_hospital": {
-            "name": "People living in the region for each hospital / clinic",
+            "name": "People living in the area for each hospital / clinic",
             "values": {"this": people_per_hospital}
         },
     }
