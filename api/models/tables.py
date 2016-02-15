@@ -798,3 +798,11 @@ SimpleTable(
     dataset='Audit of ECD Centres - National Report',
     year='2013'
 )
+SimpleTable(
+    id='ecd_grants',
+    universe='Learners receiving social grants',
+    total_column=None,
+    description='Learners receiving social grants',
+    dataset='Audit of ECD Centres - National Report',
+    year='2013'
+)
