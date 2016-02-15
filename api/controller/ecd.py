@@ -268,10 +268,17 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         children_enrolled['children_enrolled_age_3_to_5']['values']['this'],
         children_3_to_5)
 
-    children_3_to_5_per_ecd_centre = ratio(children_3_to_5, total_ecd_centres)
+    children_3_to_5_per_ecd_centre = ratio(
+        children_3_to_5,
+        total_ecd_centres)
+
     children_3_to_5_per_ecd_centre_enrolled = ratio(
         children_enrolled['children_enrolled_age_3_to_5']['values']['this'],
         total_ecd_centres)
+
+    table = get_datatable('ecd_centres_by_type')
+    ecd_centres_by_type, _ = table.get_stat_data(
+        geo_level, geo_code)
 
     # Currently there's no data available for these datapoints.
     # They are displayed in the template to promote this fact.
@@ -287,29 +294,6 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     children_in_play_groups = {
         "name": "Children in play groups",
         "values": {"this": None},
-    }
-
-    ecd_centres_by_type = {
-        "school_based": {
-            "name": 'School based',
-            "values": {"this": None},
-            "numerators": {"this": None}
-        },
-        "home_based": {
-            "name": 'Home based',
-            "values": {"this": None},
-            "numerators": {"this": None}
-        },
-        "community_based": {
-            "name": 'Community based',
-            "values": {"this": None},
-            "numerators": {"this": None}
-        },
-        "other": {
-            "name": 'Other',
-            "values": {"this": None},
-            "numerators": {"this": None}
-        },
     }
 
     children_grade_r_age = {

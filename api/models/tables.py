@@ -771,4 +771,11 @@ SimpleTable(
     dataset='Audit of ECD Centres - National Report',
     year='2013'
 )
-
+SimpleTable(
+    id='ecd_centres_by_type',
+    universe='ECD centres, by type of centre',
+    total_column='total_ecd_centres',
+    description='ECD centres, by type of centre',
+    dataset='Audit of ECD Centres - National Report',
+    year='2013'
+)
