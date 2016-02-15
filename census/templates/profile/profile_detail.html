@@ -204,6 +204,14 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_per_ecd_centre_enrolled stat_type='number' %}
             </div>
         </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_play_groups stat_type='number' %}
+            </div>
+        </section>
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Grade R learners<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
@@ -214,14 +222,6 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.schools_with_grade_r_learners stat_type='number' %}
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
-            </div>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_play_groups stat_type='number' %}
             </div>
         </section>
     </div>
