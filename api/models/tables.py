@@ -782,3 +782,11 @@ SimpleTable(
     dataset='Audit of ECD Centres - National Report',
     year='2013'
 )
+SimpleTable(
+    id='ecd_educators',
+    universe='Number of practitioners per child in ECD Centres',
+    total_column=None,
+    description='Number of practitioners per child in ECD Centres',
+    dataset='Audit of ECD Centres - National Report',
+    year='2013'
+)
