@@ -204,8 +204,16 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_3_to_5_per_ecd_centre_enrolled stat_type='number' %}
             </div>
         </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
+            </div>
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_play_groups stat_type='number' %}
+            </div>
+        </section>
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Grade R learners<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#grade-r" id="grade-r">Grade R learners<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_grade_r_age stat_type='number' %}
             </div>
@@ -214,14 +222,6 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.schools_with_grade_r_learners stat_type='number' %}
-            </div>
-        </section>
-        <section class="clearfix stat-row">
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_ecd_programmes stat_type='number' %}
-            </div>
-            <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_centres.children_in_play_groups stat_type='number' %}
             </div>
         </section>
     </div>
@@ -233,7 +233,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Practitioners at ECD centres<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd-educators" id="ecd-educators">Practitioners at ECD centres<i class="fa fa-link"></i></a></h2>
             <aside>
                 <p>* Trained: NQF4 or higher</p>
             </aside>
@@ -247,6 +247,11 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.children_per_untrained_practitioner stat_type='number' %}
             </div>
         </section>
+        <section class="clearfix stat-row grouped-row">
+            <div class="column-third">
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.practitioners_for_ages_3_to_5 stat_type='number' %}
+            </div>
+        </section>
     </div>
 </article>
 
@@ -256,7 +261,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Early learning subsidies<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#ecd-budgets" id="ecd-budgets">Early learning subsidies<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=ecd_budgets.ecd_subsidies_budgeted stat_type='number' %}
             </div>
@@ -273,7 +278,7 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
     </header>
     <div class="section-container">
         <section class="clearfix stat-row">
-            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Schools<i class="fa fa-link"></i></a></h2>
+            <h2 class="header-for-columns"><a class="permalink" href="#schools" id="schools">Schools (children aged 6-18 years)<i class="fa fa-link"></i></a></h2>
             <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=schools.total_schools stat_type='number' %}
             </div>
@@ -307,6 +312,11 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
             </div>
             <div class="column-quarter">
                 {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.people_per_hospital stat_type='number' %}
+            </div>
+        </section>
+        <section class="clearfix stat-row gouped-row">
+            <div class="column-quarter">
+                {% include 'profile/_blocks/_stat_list.html' with stat=hospitals.children_0_to_5_per_hospital stat_type='number' %}
             </div>
         </section>
     </div>

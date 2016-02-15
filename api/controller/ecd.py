@@ -213,7 +213,7 @@ def get_schools_profile(geo_code, geo_level, session):
         },
         "school_breakdown": school_breakdown,
         "children_per_primary_school": {
-            "name": "Children (6-13 years) in the region for each primary school",
+            "name": "Children (6-13 years) in the area for each primary school",
             "values": {"this": children_per_primary_school}
         },
         "children_per_secondary_school": {
@@ -267,7 +267,8 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     table = get_datatable('ecd_centres_by_type')
     ecd_centres_by_type, _ = table.get_stat_data(
-        geo_level, geo_code)
+        geo_level, geo_code,
+        key_order=['community_based', 'home_based', 'school_based', 'other', 'not_specified'])
 
 
     table = get_datatable('ecd_grade_r')
@@ -320,7 +321,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
             "values": {"this": children_3_to_5_coverage}
         },
         "children_3_to_5_per_ecd_centre": {
-            "name": "Average number of children living in the region per ECD centre",
+            "name": "Average number of children living in the area per ECD centre",
             "values": {"this": children_3_to_5_per_ecd_centre}
         },
         "children_3_to_5_per_ecd_centre_enrolled": {
@@ -362,6 +363,10 @@ def get_ecd_educators_profile(geo_code, geo_level, session):
         "children_per_untrained_practitioner": {
             "name": "Number of children for each untrained practitioner *",
             "values": {"this": None}
+        },
+        "practitioners_for_ages_3_to_5": {
+            "name": "Number of practitioners in the area for children aged 3-5.",
+            "values": {"this": ecd_educators['practitioners_for_ages_3_to_5']['values']['this']}
         }
     }
 
@@ -398,6 +403,13 @@ def get_hospitals_profile(geo_code, geo_level, session):
 
     people_per_hospital = ratio(total_pop, total_hospitals)
 
+    _, ecd_children = get_stat_data(
+        ['age in completed years'], geo_level, geo_code, session,
+        table_name='ageincompletedyears_%s' % geo_level,
+        only=['0', '1', '2', '3', '4', '5'])
+
+    children_0_to_5_per_hospital = ratio(ecd_children, total_hospitals)
+
     return {
         "total_hospitals": {
             "name": "Hospitals / Clinics",
@@ -405,8 +417,12 @@ def get_hospitals_profile(geo_code, geo_level, session):
         },
         "hospital_breakdown": hospital_breakdown,
         "people_per_hospital": {
-            "name": "People living in the region for each hospital / clinic",
+            "name": "People living in the area for each hospital / clinic",
             "values": {"this": people_per_hospital}
+        },
+        "children_0_to_5_per_hospital": {
+            "name": "Children (aged 0-5 years) living in the area for each hospital / clinic",
+            "values": {"this": children_0_to_5_per_hospital}
         },
     }
 
