@@ -238,13 +238,13 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
                 <p>* Trained: NQF4 or higher</p>
             </aside>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.total_practitioners_per_child stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.children_per_practitioner stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.trained_practitioners_per_child stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.children_per_trained_practitioner stat_type='number' %}
             </div>
             <div class="column-third">
-                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.untrained_practitioners_per_child stat_type='number' %}
+                {% include 'profile/_blocks/_stat_list.html' with stat=ecd_educators.children_per_untrained_practitioner stat_type='number' %}
             </div>
         </section>
     </div>

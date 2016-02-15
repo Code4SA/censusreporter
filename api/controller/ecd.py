@@ -289,12 +289,10 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "name": "Children of Grade R age (6 years)",
         "values": {"this": children_age_groups['6']['values']['this']}
     }
-
     ecd_centres_with_grade_r_learners = {
         "name": "Centres with Grade R learners",
         "values": {"this": None}
     }
-
     schools_with_grade_r_learners = {
         "name": "Schools with Grade R learners",
         "values": {"this": None}
@@ -337,25 +335,31 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
 def get_ecd_educators_profile(geo_code, geo_level, session):
     # These values will be filled as information becomes available.
-    total_practitioners_per_child = {
-        "name": "Number of practitioners per child",
-        "values": {"this": None}
-    }
+    table = get_datatable('ecd_educators')
+    ecd_educators, _ = table.get_stat_data(
+        geo_level, geo_code, percent=False)
 
-    trained_practitioners_per_child = {
-        "name": "Number of trained practitioners per child *",
-        "values": {"this": None}
-    }
+    table = get_datatable('ecd_children_enrolled')
+    children_enrolled, _ = table.get_stat_data(
+         geo_level, geo_code, percent=False)
 
-    untrained_practitioners_per_child = {
-        "name": "Number of untrained practitioners per child *",
-        "values": {"this": None}
-    }
+    children_per_practitioner = ratio(
+        children_enrolled['children_enrolled_age_3_to_5']['values']['this'],
+        ecd_educators['practitioners_for_ages_3_to_5']['values']['this'])
 
     return {
-        "total_practitioners_per_child": total_practitioners_per_child,
-        "trained_practitioners_per_child": trained_practitioners_per_child,
-        "untrained_practitioners_per_child": untrained_practitioners_per_child,
+        "children_per_practitioner": {
+            "name": "Number of children for each practitioner",
+            "values": {"this": children_per_practitioner}
+        },
+        "children_per_trained_practitioner": {
+            "name": "Number of children for each trained practitioner *",
+            "values": {"this": None}
+        },
+        "children_per_untrained_practitioner": {
+            "name": "Number of children for each untrained practitioner *",
+            "values": {"this": None}
+        }
     }
 
 
