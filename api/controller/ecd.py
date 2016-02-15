@@ -237,27 +237,16 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     children_3_to_5 = children_age_groups['3-5']['values']['this']
 
     # This will not be needed when the column names for centres are changed.
-    recode = OrderedDict([
-        ('reg_full', 'Registered'),
-        ('reg_conditional', 'Conditionally registered'),
-        ('reg_not_registered', 'Unregistered'),
-        ('reg_in_process', 'Registration in process'),
-        ('reg_unspecified', 'Unspecified')
-    ])
+    reg_recode = {
+        'registration_incomplete-access_denied': 'Registration incomplete',
+        'registration_incomplete-closed': 'Registration incomplete',
+        'registration_incomplete-not_found': 'Registration incomplete',
+    }
 
-    table = get_datatable('ecd_centres_2014')
+    table = get_datatable('ecd_centres_by_registration')
 
     ecd_centres_by_registration, total_ecd_centres = table.get_stat_data(
-        geo_level, geo_code, recode.keys(), percent=True, total='total_ecd_centres',
-        recode=recode)
-
-    # incomplete is everything else
-    ecd_incomplete = total_ecd_centres - sum(ecd_centres_by_registration[k]['numerators']['this'] for k in recode.itervalues())
-    ecd_centres_by_registration['reg_incomplete'] = {
-        "name": "Registration incomplete",
-        "values": {"this": percent(ecd_incomplete, total_ecd_centres)},
-        "numerators": {"this": ecd_incomplete}
-    }
+        geo_level, geo_code, percent=True, recode=reg_recode)
 
     table = get_datatable('ecd_children_enrolled')
     children_enrolled, _ = table.get_stat_data(
