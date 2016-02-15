@@ -790,3 +790,11 @@ SimpleTable(
     dataset='Audit of ECD Centres - National Report',
     year='2013'
 )
+SimpleTable(
+    id='ecd_grade_r',
+    universe='Grade R learners',
+    total_column=None,
+    description='Grade R learners',
+    dataset='Audit of ECD Centres - National Report',
+    year='2013'
+)

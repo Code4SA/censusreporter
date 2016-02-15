@@ -137,7 +137,7 @@ def get_demographics_profile(geo_code, geo_level, session):
         },
         'ecd_age_groups': ecd_age_groups,
         'ecd_children': {
-            "name": "Children under the age of 9 years",
+            "name": "Children 6 years and younger",
             "values": {"this": ecd_children}
         },
         'ecd_gender': ecd_gender,
@@ -269,6 +269,13 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     ecd_centres_by_type, _ = table.get_stat_data(
         geo_level, geo_code)
 
+
+    table = get_datatable('ecd_grade_r')
+    grade_r, _ = table.get_stat_data(
+        geo_level, geo_code, percent=False)
+
+    grade_r['centres_with_grade_r_learners']['name'] = "Centres with Grade R learners"
+
     # Currently there's no data available for these datapoints.
     # They are displayed in the template to promote this fact.
 
@@ -288,10 +295,6 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
     children_grade_r_age = {
         "name": "Children of Grade R age (6 years)",
         "values": {"this": children_age_groups['6']['values']['this']}
-    }
-    ecd_centres_with_grade_r_learners = {
-        "name": "Centres with Grade R learners",
-        "values": {"this": None}
     }
     schools_with_grade_r_learners = {
         "name": "Schools with Grade R learners",
@@ -327,7 +330,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         "children_in_ecd_programmes": children_in_ecd_programmes,
         "children_in_play_groups": children_in_play_groups,
         "children_grade_r_age": children_grade_r_age,
-        "ecd_centres_with_grade_r_learners": ecd_centres_with_grade_r_learners,
+        "ecd_centres_with_grade_r_learners": grade_r['centres_with_grade_r_learners'],
         "schools_with_grade_r_learners": schools_with_grade_r_learners,
         "children_receiving_subsidy": children_receiving_subsidy
     }
