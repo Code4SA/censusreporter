@@ -759,26 +759,26 @@ SimpleTable(
     year='2015'
 )
 SimpleTable(
-    id='ecd_centres_2014',
-    universe='Number of ECD Centres',
+    id='ecd_centres_by_registration',
+    universe='ECD centres',
     total_column='total_ecd_centres',
-    description='2014 number of ECD centres',
+    description='ECD centres, by registration status of centre',
     dataset='Audit of ECD Centres - National Report',
-    year='2014'
+    year='2013'
+)
+SimpleTable(
+    id='ecd_centres_by_type',
+    universe='ECD centres',
+    total_column='total_ecd_centres',
+    description='ECD centres, by type of centre',
+    dataset='Audit of ECD Centres - National Report',
+    year='2013'
 )
 SimpleTable(
     id='ecd_children_enrolled',
     universe='Number of children enrolled in ECD Centres',
     total_column=None,
     description='Number of children enrolled in ECD Centres',
-    dataset='Audit of ECD Centres - National Report',
-    year='2013'
-)
-SimpleTable(
-    id='ecd_centres_by_type',
-    universe='ECD centres, by type of centre',
-    total_column='total_ecd_centres',
-    description='ECD centres, by type of centre',
     dataset='Audit of ECD Centres - National Report',
     year='2013'
 )
