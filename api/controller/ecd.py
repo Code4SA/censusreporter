@@ -267,7 +267,8 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     table = get_datatable('ecd_centres_by_type')
     ecd_centres_by_type, _ = table.get_stat_data(
-        geo_level, geo_code)
+        geo_level, geo_code,
+        key_order=['community_based', 'home_based', 'school_based', 'other', 'not_specified'])
 
 
     table = get_datatable('ecd_grade_r')
