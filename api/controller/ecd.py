@@ -29,7 +29,7 @@ ECD_AGE_CATEGORIES = {
     '3': '3-5',
     '4': '3-5',
     '5': '3-5',
-    '6': '6',
+    '6': '6-7',
 }
 
 TYPE_OF_DWELLING_RECODE = {
@@ -295,7 +295,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     children_grade_r_age = {
         "name": "Children of Grade R age (6 years)",
-        "values": {"this": children_age_groups['6']['values']['this']}
+        "values": {"this": children_age_groups['6-7']['values']['this']}
     }
     schools_with_grade_r_learners = {
         "name": "Schools with Grade R learners",
