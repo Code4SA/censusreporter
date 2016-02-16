@@ -155,7 +155,7 @@ def get_demographics_profile(geo_code, geo_level, session):
             'values': {"this": total_pop / geo.square_kms}
         }
         final_data['child_population_density'] = {
-            'name': 'Children (0-9 years) per square kilometre',
+            'name': 'Children (0-6 years) per square kilometre',
             'values': {"this": ecd_children / geo.square_kms}
         }
 
@@ -384,11 +384,11 @@ def get_ecd_budgets_profile(geo_code, geo_level, session):
         "values": {"this": csg}
     }
 
-
     child_support_grants_amount = {
         "name": "Approximate amount paid as child support grants to children in ECD centres (monthly)",
         "values": {"this": csg * monthly_csg}
     }
+
     # These values will be filled as information becomes available.
     ecd_subsidies_budgeted = {
         "name": "Amount budgeted for early learning subsidies",
