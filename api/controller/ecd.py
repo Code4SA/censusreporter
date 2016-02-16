@@ -29,7 +29,7 @@ ECD_AGE_CATEGORIES = {
     '3': '3-5',
     '4': '3-5',
     '5': '3-5',
-    '6': '6-7',
+    '6': '6',
 }
 
 TYPE_OF_DWELLING_RECODE = {
@@ -117,7 +117,7 @@ def get_demographics_profile(geo_code, geo_level, session):
     ecd_age_groups, ecd_children = get_stat_data(
         ['age in completed years'], geo_level, geo_code, session,
         table_name='ageincompletedyears_%s' % geo_level,
-        only=['0', '1', '2', '3', '4', '5', '6'],
+        only=['0', '1', '2', '3', '4', '5'],
         recode=ECD_AGE_CATEGORIES)
 
     ecd_gender, total_ecd_gender = get_stat_data(
@@ -137,7 +137,7 @@ def get_demographics_profile(geo_code, geo_level, session):
         },
         'ecd_age_groups': ecd_age_groups,
         'ecd_children': {
-            "name": "Children 6 years and younger",
+            "name": "Children 5 years and younger",
             "values": {"this": ecd_children}
         },
         'ecd_gender': ecd_gender,
@@ -155,7 +155,7 @@ def get_demographics_profile(geo_code, geo_level, session):
             'values': {"this": total_pop / geo.square_kms}
         }
         final_data['child_population_density'] = {
-            'name': 'Children (0-6 years) per square kilometre',
+            'name': 'Children (0-5 years) per square kilometre',
             'values': {"this": ecd_children / geo.square_kms}
         }
 
@@ -232,7 +232,8 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
         table_name='ageincompletedyears_%s' % geo_level,
         only=['3', '4', '5', '6'],
         recode=ECD_AGE_CATEGORIES,
-        percent=False)
+        percent=False,
+        key_order=['0-2', '3-5', '6-7'])
 
     children_3_to_5 = children_age_groups['3-5']['values']['this']
 
@@ -295,7 +296,7 @@ def get_ecd_centres_profile(geo_code, geo_level, session):
 
     children_grade_r_age = {
         "name": "Children of Grade R age (6 years)",
-        "values": {"this": children_age_groups['6-7']['values']['this']}
+        "values": {"this": children_age_groups['6']['values']['this']}
     }
     schools_with_grade_r_learners = {
         "name": "Schools with Grade R learners",

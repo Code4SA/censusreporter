@@ -131,23 +131,23 @@ Please provide any feedback you may have by using the Help &amp; Feedback button
     <div class="section-container">
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#ecd_age_groups" id="age_groups">Early childhood age groups<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.ecd_children stat_type='number' %}
             </div>
-            <div class="column-half">
+            <div class="column-third">
                 <div id="chart-histogram-demographics-ecd_age_groups" data-chart-title="Children by age in years" data-stat-type="scaled-percentage"></div>
             </div>
-            <div class="column-quarter">
-                <div id="chart-pie-demographics-ecd_gender" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Gender of children under the age of six years"></div>
+            <div class="column-third">
+                <div id="chart-pie-demographics-ecd_gender" data-stat-type="percentage" data-initial-sort="-value" data-chart-title="Gender of children under the age of nine years"></div>
             </div>
         </section>
         {% if demographics.child_population_density.values.this %}
         <section class="clearfix stat-row">
             <h2 class="header-for-columns"><a class="permalink" href="#ecd_pop_density" id="ecd_pop_density">Child population density<i class="fa fa-link"></i></a></h2>
-            <div class="column-quarter">
+            <div class="column-third">
                 {% include 'profile/_blocks/_stat_list.html' with stat=demographics.child_population_density stat_type='number' %}
             </div>
-            <div class="column-half">
+            <div class="column-third">
                 <div id="chart-histogram-demographics-ecd_pop_density" data-chart-title="Children per square kilometre" data-decimal-places="2"></div>
             </div>
         </section>
