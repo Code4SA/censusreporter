@@ -33,6 +33,14 @@
     background-color: white;
     vertical-align: baseline;
 }
+
+.ilifa-logo {
+    height: 34px;
+    padding: 2px;
+    background-color: white;
+    vertical-align: baseline;
+}
+
 #page-header-title .mma-logo {
     margin: 5px 3px 0px 0px;
 }
