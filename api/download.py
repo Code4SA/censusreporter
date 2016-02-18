@@ -22,7 +22,7 @@ supported_formats = {
 
 log = logging.getLogger('censusreporter')
 
-bad_layer_chars = re.compile('[ #-]')
+bad_layer_chars = re.compile('[ /#-]')
 
 def generate_download_bundle(tables, geos, geo_ids, data, fmt):
     ogr.UseExceptions()
