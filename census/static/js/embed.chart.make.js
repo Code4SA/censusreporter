@@ -68,9 +68,14 @@ function makeCensusEmbeds() {
     }
     
     embed.sendDataToFrames = function(data) {
+        var embedUrl = EMBED_URL;
+        if (window.location.protocol == 'https:') {
+            embedUrl = embedUrl.replace(/^http:/, 'https:');
+        }
+
         // IE9 can only send strings
         for (var i = 0; i < embed.numContainers; i++) {
-            embed.containers[i].contentWindow.postMessage(JSON.stringify(data), EMBED_URL);
+            embed.containers[i].contentWindow.postMessage(JSON.stringify(data), embedUrl);
         }
     }
     
